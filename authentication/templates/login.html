@@ -1,0 +1,61 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="card shadow">
+        <div class="card-header text-center">
+          <h3 class="mb-0">Login</h3>
+        </div>
+        <div class="card-body">
+          {% if request.user.is_authenticated %}
+          <div class="alert alert-success text-center">
+            You are already logged in. <a href="{% url 'logout' %}" class="text-decoration-none">Logout</a>
+          </div>
+          {% else %}
+          <form action="{% url 'login' %}" method="POST">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+              <label for="identifier" class="form-label">Email or Phone Number</label>
+              <input
+                type="text"
+                id="identifier"
+                name="identifier"
+                class="form-control"
+                placeholder="Enter your email or phone number"
+                value="{{ request.POST.identifier }}"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-control"
+                placeholder="Enter your password"
+                value="{{ request.POST.password }}"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+
+          <hr class="my-4">
+
+          <div class="text-center">
+            <p>Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none">Create an account</a>.</p>
+            <p>Forgot your password? <a href="{% url 'reset_password' %}" class="text-decoration-none">Reset it</a>.</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
