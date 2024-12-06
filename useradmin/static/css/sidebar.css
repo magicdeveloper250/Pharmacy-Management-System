@@ -99,10 +99,12 @@
     padding-left: 0px;
     border-left: 3px solid #2e353d;
     border-bottom: 1px solid #23282e;
+    width: inherit;
   }
   .nav-side-menu li a {
     text-decoration: none;
     color: #e1ffff;
+    width: inherit;
   }
   .nav-side-menu li a i {
     padding-left: 10px;

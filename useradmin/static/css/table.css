@@ -1,0 +1,19 @@
+#medicine-table thead {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+}
+
+ 
+#medicine-table th, #medicine-table td {
+    padding: 10px;
+}
+
+#medicine-table th, #medicine-table tr{
+    cursor: pointer;
+}
+ 
+#table-container {
+    overflow-y: auto;
+}

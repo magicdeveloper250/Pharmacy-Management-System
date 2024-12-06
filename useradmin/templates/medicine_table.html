@@ -1,0 +1,30 @@
+{% load static %}
+<link rel="stylesheet" href="{%static 'css/table.css'%}">
+<div id="table-container" class="col-md-12 mb-3" style="height: 40vh; overflow-y: auto; resize: vertical;">
+    <h2>Available Medicines</h2>
+    <table class="table table-bordered" id="medicine-table">
+        <thead>
+            <tr>
+                <th>Medicine Name</th>
+                <th>Formulation</th>
+                <th>Strength</th>
+                <th>Batch Number</th>
+                <th>Quantity in Stock</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Example Row -->
+            <tr>
+                <td>Aspirin</td>
+                <td>Tablet</td>
+                <td>500mg</td>
+                <td>12345</td>
+                <td>100</td>
+                <td>$10.00</td>
+            </tr>
+            <!-- Repeat the above row for each medicine -->
+        </tbody>
+    </table>
+</div>
+ 

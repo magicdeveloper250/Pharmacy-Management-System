@@ -9,44 +9,35 @@
 
     <div class="menu-list">
         <ul id="menu-content" class="menu-content collapse out">
-            <li>
-                <a href="#">
+            <li class="{% if active_tab == 'dash' %}active{% endif %}">
+                <a href="{%url 'admin_dash'%}?tab=dash">
                     <i class="fa fa-clock fa-lg"></i> Dashboard
                 </a>
             </li>
 
-            <li data-toggle="collapse" data-target="#customer" class="collapsed">
-                <a href="#"><i class="fa fa-users fa-lg"></i> Customer <span class="arrow"></span></a>
-            </li>
-            <ul class="sub-menu collapse" id="customer">
-                <li><i class="fa fa-plus-square"></i>  Add Customer</li>
-                <li><i class="fa fa-edit"></i> Manage Customer</li>
-            </ul>
+            <li data-toggle="collapse" data-target="#new"  class="{% if active_tab == 'medicine' %}active{% endif %}">
 
-            <li data-toggle="collapse" data-target="#new" class="collapsed">
-                <a href="#"><i class="fa fa-pills fa-lg"></i> Medicine <span class="arrow"></span></a>
+            <a href="{%url 'medicine'%}?tab=medicine"> <i class="fa fa-pills fa-lg"></i> Medicine Management</a></li>
             </li>
-            <ul class="sub-menu collapse" id="new">
-                <li><i class="fa fa-plus-square"></i> Add Medicine</li>
-                <li><i class="fa fa-edit"></i> Manage Medicine</li>
-                <li><i class="fa fa-list-alt"></i> Manage Medicine Stock</li>
-            </ul>
+          
 
-            <li data-toggle="collapse" data-target="#supplier" class="collapsed">
-                <a href="#"><i class="fa fa-truck fa-lg"></i> Supplier <span class="arrow"></span></a>
+            <li data-toggle="collapse" data-target="#customer" class="{% if active_tab == 'customer' %}active{% endif %}">
+                <a href="#"><i class="fa fa-users fa-lg"></i> Customer Management </a>
             </li>
-            <ul class="sub-menu collapse" id="supplier">
-                <li><i class="fa fa-plus-square"></i> Add Supplier</li>
-                <li><i class="fa fa-edit"></i> Manage Supplier</li></li>
-            </ul>
+            
 
-            <li data-toggle="collapse" data-target="#purchase" class="collapsed">
-                <a href="#"><i class="fa fa-shopping-cart fa-lg"></i> Purchase <span class="arrow"></span></a>
+          
+            <li data-toggle="collapse" data-target="#supplier" class="{% if active_tab == 'supplier' %}active{% endif %}">
+                <a href="#"><i class="fa fa-truck fa-lg"></i> Supplier  Management</a>
             </li>
-            <ul class="sub-menu collapse" id="purchase">
-                <li><i class="fa fa-plus-square"></i> Add Purchase</li>
-                <li><i class="fa fa-edit"></i> Manage Purchase</li>
-            </ul>
+
+            <li data-toggle="collapse" data-target="#purchase" class="{% if active_tab == 'purchase' %}active{% endif %}">
+                <a href="#"><i class="fa fa-shopping-cart fa-lg"></i> Purchase Management</a>
+            </li>
+            <li data-toggle="collapse" data-target="#purchase" class="{% if active_tab == 'sales' %}active{% endif %}">
+                <a href="#"><i class="fas fa-dollar-sign fa-lg"></i> Sales Management</a>
+            </li>
+             
 
             <li>
                 <a href="#">
@@ -60,20 +51,25 @@
 <!-- jQuery Script -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-        // Toggle submenus when parent menu items are clicked
-        $('.menu-content > li').on('click', function () {
-            const target = $(this).data('target');
-            if (target) {
-                $(target).slideToggle(); // Show/Hide the submenu
-                $(this).toggleClass('active'); // Add/Remove active class
-            }
-        });
+ $(document).ready(function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const activeTab = urlParams.get('tab') || 'dash';  
 
-        // Optional: Close other open menus when one is clicked
-        $('.menu-content > li').on('click', function () {
-            $('.sub-menu').not($(this).next()).slideUp(); // Hide all other submenus
-            $(this).siblings().removeClass('active'); // Remove active class from other menu items
-        });
+    // Highlight the active menu item based on the query parameter
+    $('.menu-content > li').each(function () {
+        const link = $(this).find('a').attr('href');
+        if (link && link.includes(`tab=${activeTab}`)) {
+            $(this).addClass('active');
+        } else {
+            $(this).removeClass('active');
+        }
     });
+
+    // Handle menu clicks
+    $('.menu-content > li > a').on('click', function () {
+        $('.menu-content > li').removeClass('active');  
+        $(this).addClass('active');  
+    });
+});
+
 </script>

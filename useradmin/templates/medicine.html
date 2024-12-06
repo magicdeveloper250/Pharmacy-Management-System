@@ -1,0 +1,156 @@
+{% extends "admin_dashboard.html" %}
+{% load static %}
+{% block main_content %}
+    <div class="container mt-0">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+            <div >
+                <h3>Medicine Management</h3>
+            </div>
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
+                <a href="{%url 'admin_dash'%}"  class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
+            </div>
+        </div>
+
+        <div class="row" style="display: flex; flex-direction: column; height: 80vh;">
+            {%include 'medicine_form.html'%}
+            <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
+            {%include 'medicine_table.html'%}
+            
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                const $resizer = $('#resizer');
+                const $tableContainer = $('#table-container');
+                let isResizing = false;
+
+                const renderMedicines = (medicines) => {
+                    let el = ``;
+                    medicines.forEach(medicine => {
+                        el += `<tr class="medicine-row" data-id="${medicine.id}">
+                                    <td>${medicine.name}</td>
+                                    <td>${medicine.packaging_type}</td>
+                                    <td>${medicine.strength}</td>
+                                    <td>${medicine.batch_number}</td>
+                                    <td>${medicine.quantity_in_stock}</td>
+                                    <td>$${medicine.price}</td>
+                                </tr>`
+                    });
+                    $("#medicine-table > tbody").html(el);
+
+                    // Attach click event to each row
+                    $(".medicine-row").on('click', function() {
+                        const medicineId = $(this).data('id');
+                        // Fetch the specific medicine details using AJAX or use already available data
+                        $.get("{% url 'get_medicine' %}", {id: medicineId}, function(response) {
+                            if (response.status === 'success') {
+                                populateForm(response.medicine);
+                            } else {
+                                alert('Failed to load medicine details.');
+                            }
+                        });
+                    });
+                };
+
+                const populateForm = (medicine) => {
+                    // Populate form fields with the selected medicine data
+                    $('#id').val(medicine.id); // Set the hidden ID field
+                    $('#name').val(medicine.name);
+                    $('#formulation').val(medicine.formulation);
+                    $('#strength').val(medicine.strength);
+                    $('#expiration_date').val(medicine.expiration_date);
+                    $('#batch_number').val(medicine.batch_number);
+                    $('#storage_conditions').val(medicine.storage_conditions);
+                    $('#manufacturer').val(medicine.manufacturer);
+                    $('#active_ingredients').val(medicine.active_ingredients);
+                    $('#shelf_life').val(medicine.shelf_life);
+                    $('#route_of_administration').val(medicine.route_of_administration);
+                    $('#dosage_instructions').val(medicine.dosage_instructions);
+                    $('#side_effects').val(medicine.side_effects);
+                    $('#packaging_type').val(medicine.packaging_type);
+                    $('#quantity_in_stock').val(medicine.quantity_in_stock);
+                    $('#price').val(medicine.price);
+                    $('#is_prescription_required').prop('checked', medicine.is_prescription_required);
+                };
+
+                // Fetch medicines when the page loads
+                $.get("{% url 'get_medicines' %}", function(response) {
+                    if (response.status === 'success') {
+                        renderMedicines(response.medicines);
+                    } else {
+                        alert('Failed to load medicines.');
+                    }
+                }).fail(function() {
+                    alert('Error occurred while fetching medicines.');
+                });
+
+                // Validate form before submitting
+                $('#medicineForm').on('submit', function (event) {
+                    event.preventDefault(); // Prevent default form submission
+
+                    if (!validateForm()) {
+                        alert('Please fill in all fields before submitting.');
+                        return;
+                    }
+
+                    // Collect form data
+                    const formData = new FormData(this);
+
+                    const medicineId = $('#id').val();  
+
+                    // Send AJAX request depending on whether it's an update or a new medicine
+                    let ajaxOptions = {
+                        url: medicineId ? "{% url 'medicine' %}" : "{% url 'upload_medicine' %}", // Update or create
+                        type: medicineId ? 'PUT' : 'POST', // Use PUT for update, POST for create
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                alert(response.message);
+                                // Optionally clear the form
+                                $('#medicineForm')[0].reset();
+                                const jsonMedicines = response.medicines.reverse();
+                                renderMedicines(jsonMedicines);
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            alert('An error occurred: ' + error);
+                        }
+                    };
+
+                    // Make the AJAX request
+                    $.ajax(ajaxOptions);
+                });
+
+                // Function to validate form fields
+                function validateForm() {
+                    let isValid = true;
+
+                    // Iterate through form inputs
+                    $('#medicineForm').find('input, textarea, select').each(function () {
+                        if ($(this).prop('required') && !$(this).val()) {
+                            isValid = false;
+                            $(this).addClass('is-invalid'); // Add invalid class for styling
+                        } else {
+                            $(this).removeClass('is-invalid'); // Remove invalid class if valid
+                        }
+                    });
+
+                    return isValid;
+                }
+
+               
+            });
+
+            function submitForm() {
+                    $('#medicineForm').submit();
+                }
+
+        </script>
+        
+    </div>
+{% endblock %}
