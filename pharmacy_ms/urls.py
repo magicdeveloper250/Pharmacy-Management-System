@@ -24,10 +24,8 @@ from .views import index
 urlpatterns = [
     path("", index, name="index"),
     path("admin/", admin.site.urls),
-    path("auth/", include("authentication.urls"), name="auth"),
-    # path("admin1/", include("admin1.urls"), name="admin1"),
-    # path("house/", include("house.urls"), name="property"),
-    # path("renter/", include("renter.urls"), name="renter"),
+    path("auth/", include("authentication.urls")),
+    path("admin_dash/", include("useradmin.urls"))
 ]
 
 if settings.DEBUG:

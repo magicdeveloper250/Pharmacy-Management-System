@@ -1,0 +1,29 @@
+.card-statistics {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    border: 1px solid #00aaff;
+}
+
+.card-icon {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+.report-card {
+    border: 1px solid #ff0000;
+    padding: 10px;
+    background: #fff;
+}
+
+.dashboard-actions .card {
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.dashboard-actions .card:hover {
+    transform: scale(1.05);
+}
+
+

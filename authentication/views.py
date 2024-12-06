@@ -73,14 +73,8 @@ def login_user(request):
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
-            # if user.is_buyer:
-            #     ...
-            # elif user.is_renter:
-            #     ...
-            # elif user.is_admin:
-            #     ...
             messages.success(request, "User logged successfully")
-
+            return redirect("admin_dash")
         else:
             messages.error(request, "Username or password is incorrect")
 

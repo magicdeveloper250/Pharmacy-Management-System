@@ -1,0 +1,79 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+<div class="nav-side-menu">
+    <div class="brand">
+        <img src="{% static 'images/avatar.jpg' %}" alt="profile image" class="avatar">
+        <span>{{ request.user.username }}</span>
+    </div>
+    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+
+    <div class="menu-list">
+        <ul id="menu-content" class="menu-content collapse out">
+            <li>
+                <a href="#">
+                    <i class="fa fa-clock fa-lg"></i> Dashboard
+                </a>
+            </li>
+
+            <li data-toggle="collapse" data-target="#customer" class="collapsed">
+                <a href="#"><i class="fa fa-users fa-lg"></i> Customer <span class="arrow"></span></a>
+            </li>
+            <ul class="sub-menu collapse" id="customer">
+                <li><i class="fa fa-plus-square"></i>  Add Customer</li>
+                <li><i class="fa fa-edit"></i> Manage Customer</li>
+            </ul>
+
+            <li data-toggle="collapse" data-target="#new" class="collapsed">
+                <a href="#"><i class="fa fa-pills fa-lg"></i> Medicine <span class="arrow"></span></a>
+            </li>
+            <ul class="sub-menu collapse" id="new">
+                <li><i class="fa fa-plus-square"></i> Add Medicine</li>
+                <li><i class="fa fa-edit"></i> Manage Medicine</li>
+                <li><i class="fa fa-list-alt"></i> Manage Medicine Stock</li>
+            </ul>
+
+            <li data-toggle="collapse" data-target="#supplier" class="collapsed">
+                <a href="#"><i class="fa fa-truck fa-lg"></i> Supplier <span class="arrow"></span></a>
+            </li>
+            <ul class="sub-menu collapse" id="supplier">
+                <li><i class="fa fa-plus-square"></i> Add Supplier</li>
+                <li><i class="fa fa-edit"></i> Manage Supplier</li></li>
+            </ul>
+
+            <li data-toggle="collapse" data-target="#purchase" class="collapsed">
+                <a href="#"><i class="fa fa-shopping-cart fa-lg"></i> Purchase <span class="arrow"></span></a>
+            </li>
+            <ul class="sub-menu collapse" id="purchase">
+                <li><i class="fa fa-plus-square"></i> Add Purchase</li>
+                <li><i class="fa fa-edit"></i> Manage Purchase</li>
+            </ul>
+
+            <li>
+                <a href="#">
+                    <i class="fa fa-search fa-lg"></i> Search
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- jQuery Script -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Toggle submenus when parent menu items are clicked
+        $('.menu-content > li').on('click', function () {
+            const target = $(this).data('target');
+            if (target) {
+                $(target).slideToggle(); // Show/Hide the submenu
+                $(this).toggleClass('active'); // Add/Remove active class
+            }
+        });
+
+        // Optional: Close other open menus when one is clicked
+        $('.menu-content > li').on('click', function () {
+            $('.sub-menu').not($(this).next()).slideUp(); // Hide all other submenus
+            $(this).siblings().removeClass('active'); // Remove active class from other menu items
+        });
+    });
+</script>

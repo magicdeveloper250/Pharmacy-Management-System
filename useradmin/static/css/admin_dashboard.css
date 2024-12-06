@@ -1,0 +1,26 @@
+/* Ensure proper height and overflow handling */
+.container-fluid {
+  height: 100vh; /* Take full screen height */
+}
+
+.row {
+  display: flex;
+  height: 100%; /* Ensure the row takes the full height */
+}
+
+.col-md-9 {
+  overflow-y: auto; /* Add scrolling to the main content */
+  max-height: calc(100vh - 20px); /* Allow space for padding */
+}
+
+.vh-100 {
+  height: 100vh;
+}
+
+.bg-light {
+  background-color: #f8f9fa;
+}
+
+.overflow-auto {
+  overflow-y: auto;
+}
