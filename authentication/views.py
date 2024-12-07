@@ -1,17 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .utils import *
 from .models import User, PasswordResetToken
 from django.db import IntegrityError
 import base64
+from django.contrib.auth.decorators import login_not_required
 
-
+@login_not_required
 def auth_index(request):
     return render(request, "login.html")
 
-
+@login_not_required
 def register_user(request):
     errors = {}
     if request.method == "POST":
@@ -65,7 +65,7 @@ def register_user(request):
 
     return render(request, "register.html", context={"errors": errors})
 
-
+@login_not_required
 def login_user(request):
     if request.method == "POST":
         username = request.POST["identifier"]
@@ -80,11 +80,11 @@ def login_user(request):
 
     return render(request, "login.html")
 
-@login_required
 def logout_user(request):
     logout(request)
-    return redirect("login")
-
+    return redirect('login')
+    
+@login_not_required
 def reset_password_email(request):
     if request.method=="POST":
         messages.success(request, "We've password reset instruction to the provided email address.")
@@ -121,7 +121,7 @@ def reset_password_email(request):
            
     return render(request, "reset_password_email.html")
 
-
+@login_not_required
 def reset_password(request, token, email):
     
     try:

@@ -1,0 +1,37 @@
+.custom-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adds space between the checkbox and label */
+}
+
+.custom-checkbox {
+    display: none; /* Hides the default checkbox */
+}
+
+.custom-checkbox-label {
+    width: 24px;
+    height: 24px;
+    background-color: #f1f1f1;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+}
+
+.custom-checkbox-label::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background-color: #007bff; /* Checked color */
+    border-radius: 2px;
+    display: none;
+}
+
+.custom-checkbox:checked + .custom-checkbox-label::after {
+    display: block;
+}

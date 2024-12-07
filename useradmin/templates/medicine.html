@@ -4,7 +4,7 @@
     <div class="container mt-0">
         <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
             <div >
-                <h3>Medicine Management</h3>
+                <h3><i class="fa fa-pills fa-lg"></i> Medicine Management</h3>
             </div>
             <div class="text-right">
                 <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
@@ -12,11 +12,10 @@
             </div>
         </div>
 
-        <div class="row" style="display: flex; flex-direction: column; height: 80vh;">
+        <div class="row" style="display: flex; flex-direction: column; height: 90vh;">
             {%include 'medicine_form.html'%}
             <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
             {%include 'medicine_table.html'%}
-            
         </div>
 
         <script>
@@ -25,24 +24,30 @@
                 const $tableContainer = $('#table-container');
                 let isResizing = false;
 
+                $("#dialog").dialog({
+                    autoOpen: false,  
+                    modal: true,     
+                    width: 400,       
+                    height: 250,     
+                    
+                });
+
                 const renderMedicines = (medicines) => {
                     let el = ``;
                     medicines.forEach(medicine => {
                         el += `<tr class="medicine-row" data-id="${medicine.id}">
                                     <td>${medicine.name}</td>
-                                    <td>${medicine.packaging_type}</td>
+                                    <td>${medicine.formulation}</td>
                                     <td>${medicine.strength}</td>
                                     <td>${medicine.batch_number}</td>
                                     <td>${medicine.quantity_in_stock}</td>
                                     <td>$${medicine.price}</td>
+                                    <td><button class="btn btn-outline-danger delete-btn" data-id="${medicine.id}"><i class="fa fa-trash"></i></button></td>
                                 </tr>`
                     });
                     $("#medicine-table > tbody").html(el);
-
-                    // Attach click event to each row
                     $(".medicine-row").on('click', function() {
                         const medicineId = $(this).data('id');
-                        // Fetch the specific medicine details using AJAX or use already available data
                         $.get("{% url 'get_medicine' %}", {id: medicineId}, function(response) {
                             if (response.status === 'success') {
                                 populateForm(response.medicine);
@@ -51,11 +56,49 @@
                             }
                         });
                     });
+
+                    $(".delete-btn").on('click', function(event) {
+                        event.stopPropagation();  
+                        const medicineId = $(this).data('id');
+
+                        $("#dialog").dialog("option", "title", "Confirm  deletion.");
+                                $("#dialog").html(`<p>Do you want delete this medicine.</p>`);
+
+                                $("#dialog").dialog("option", "buttons", {
+                                    Ok: function () {
+                                        $(this).dialog("close");
+                                        $.ajax({
+                                        url: "{% url 'delete_medicine' %}",
+                                        type: "DELETE",
+                                        data: JSON.stringify({ id: medicineId }),
+                                        processData: false,
+                                        contentType: false,
+                                        success: function(response) {
+                                            if (response.status === 'success') {
+                                                const jsonMedicines = response.medicines.reverse();
+                                                renderMedicines(jsonMedicines);  
+                                            } else {
+                                                alert(response.message);
+                                            }
+                                        },
+                                        error: function(xhr, status, error) {
+                                            alert('An error occurred: ' + error);
+                                        }
+                                    });
+                                       
+                                    },
+                                    Cancel: function () {
+                                        $(this).dialog("close");
+                                    },
+                                });
+                                $("#dialog").dialog("open");
+                                $('#id').val("")
+                        
+                    });
                 };
 
                 const populateForm = (medicine) => {
-                    // Populate form fields with the selected medicine data
-                    $('#id').val(medicine.id); // Set the hidden ID field
+                    $('#id').val(medicine.id);
                     $('#name').val(medicine.name);
                     $('#formulation').val(medicine.formulation);
                     $('#strength').val(medicine.strength);
@@ -73,8 +116,7 @@
                     $('#price').val(medicine.price);
                     $('#is_prescription_required').prop('checked', medicine.is_prescription_required);
                 };
-
-                // Fetch medicines when the page loads
+ 
                 $.get("{% url 'get_medicines' %}", function(response) {
                     if (response.status === 'success') {
                         renderMedicines(response.medicines);
@@ -85,33 +127,39 @@
                     alert('Error occurred while fetching medicines.');
                 });
 
-                // Validate form before submitting
                 $('#medicineForm').on('submit', function (event) {
-                    event.preventDefault(); // Prevent default form submission
+                    event.preventDefault(); 
 
                     if (!validateForm()) {
                         alert('Please fill in all fields before submitting.');
                         return;
                     }
-
-                    // Collect form data
-                    const formData = new FormData(this);
-
-                    const medicineId = $('#id').val();  
-
-                    // Send AJAX request depending on whether it's an update or a new medicine
+ 
+                    let formData = {};
+                    $('#medicineForm').find('input, textarea, select').each(function() {
+                        formData[$(this).attr('name')] = $(this).val();
+                    });
+                    const medicineId = $('#id').val();
                     let ajaxOptions = {
-                        url: medicineId ? "{% url 'medicine' %}" : "{% url 'upload_medicine' %}", // Update or create
-                        type: medicineId ? 'PUT' : 'POST', // Use PUT for update, POST for create
-                        data: formData,
+                        url: medicineId ? "{% url 'update_medicine' %}" : "{% url 'upload_medicine' %}",
+                        type: medicineId ? 'PUT' : 'POST',
+                        data: JSON.stringify(formData)  ,
                         processData: false,
                         contentType: false,
                         success: function (response) {
                             if (response.status === 'success') {
-                                alert(response.message);
-                                // Optionally clear the form
-                                $('#medicineForm')[0].reset();
-                                const jsonMedicines = response.medicines.reverse();
+                                $("#dialog").dialog("option", "title", "Success");
+                                $("#dialog").html(`<p>${response.message}</p>`);
+
+                                $("#dialog").dialog("option", "buttons", {
+                                    Ok: function () {
+                                        $(this).dialog("close");
+                                        $("#medicineForm")[0].reset();
+                                        $('#id').val("")
+                                    },
+                                });
+                                $("#dialog").dialog("open");
+                                const jsonMedicines = medicineId ? response.medicines : response.medicines.reverse();
                                 renderMedicines(jsonMedicines);
                             } else {
                                 alert(response.message);
@@ -122,35 +170,28 @@
                         }
                     };
 
-                    // Make the AJAX request
                     $.ajax(ajaxOptions);
                 });
 
-                // Function to validate form fields
                 function validateForm() {
                     let isValid = true;
-
-                    // Iterate through form inputs
                     $('#medicineForm').find('input, textarea, select').each(function () {
                         if ($(this).prop('required') && !$(this).val()) {
                             isValid = false;
-                            $(this).addClass('is-invalid'); // Add invalid class for styling
+                            $(this).addClass('is-invalid');
                         } else {
-                            $(this).removeClass('is-invalid'); // Remove invalid class if valid
+                            $(this).removeClass('is-invalid');
                         }
                     });
-
                     return isValid;
                 }
-
-               
             });
 
             function submitForm() {
-                    $('#medicineForm').submit();
-                }
+                $('#medicineForm').submit();
+            }
 
         </script>
-        
+
     </div>
 {% endblock %}

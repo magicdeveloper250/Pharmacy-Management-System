@@ -1,4 +1,4 @@
-#medicine-table thead {
+#customer-table thead {
     position: sticky;
     top: 0;
     background-color: #f8f9fa;
@@ -11,11 +11,11 @@
     margin-block: 1em;
 }
  
-#medicine-table th, #medicine-table td {
+#customer-table th, #customer-table td {
     padding: 10px;
 }
 
-#medicine-table th, #medicine-table tr{
+#customer-table th, #customer-table tr{
     cursor: pointer;
 }
  

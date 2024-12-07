@@ -49,9 +49,10 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.auth.middleware.LoginRequiredMiddleware",
 ]
 
 ROOT_URLCONF = "pharmacy_ms.urls"
@@ -155,4 +156,4 @@ ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "gif"]
 PROFILE_IMAGE_SIZE = 2 * 1024 * 1024
 RESET_TOKEN_TIMEOUT=60
 
-LOGIN_URL = '/auth/login'
+LOGIN_URL = 'login'

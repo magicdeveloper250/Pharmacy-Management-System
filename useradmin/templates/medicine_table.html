@@ -1,9 +1,13 @@
 {% load static %}
-<link rel="stylesheet" href="{%static 'css/table.css'%}">
+<link rel="stylesheet" href="{%static 'css/customer_table.css'%}">
 <div id="table-container" class="col-md-12 mb-3" style="height: 40vh; overflow-y: auto; resize: vertical;">
-    <h2>Available Medicines</h2>
+    
     <table class="table table-bordered" id="medicine-table">
         <thead>
+            <div id="table-search-box">
+                <div><input type="text" aria-label="search-medicine"  class="form-control" placeholder="Search..."/></div>
+                <button class="btn btn-secondary"><i class="fa fa-search"></i> Search</button>
+            </div>
             <tr>
                 <th>Medicine Name</th>
                 <th>Formulation</th>
@@ -14,16 +18,8 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Example Row -->
-            <tr>
-                <td>Aspirin</td>
-                <td>Tablet</td>
-                <td>500mg</td>
-                <td>12345</td>
-                <td>100</td>
-                <td>$10.00</td>
-            </tr>
-            <!-- Repeat the above row for each medicine -->
+          
+            
         </tbody>
     </table>
 </div>

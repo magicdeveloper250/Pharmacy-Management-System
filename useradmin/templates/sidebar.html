@@ -1,9 +1,11 @@
 {% load static %}
+ 
 <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
 <div class="nav-side-menu">
     <div class="brand">
         <img src="{% static 'images/avatar.jpg' %}" alt="profile image" class="avatar">
         <span>{{ request.user.username }}</span>
+        <a href="{%url 'logout'%}">Logout</a>
     </div>
     <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
 
@@ -22,7 +24,7 @@
           
 
             <li data-toggle="collapse" data-target="#customer" class="{% if active_tab == 'customer' %}active{% endif %}">
-                <a href="#"><i class="fa fa-users fa-lg"></i> Customer Management </a>
+                <a href="{%url 'customer'%}?tab=customer"><i class="fa fa-users fa-lg"></i> Customer Management </a>
             </li>
             
 
@@ -48,14 +50,11 @@
     </div>
 </div>
 
-<!-- jQuery Script -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ 
 <script>
  $(document).ready(function () {
     const urlParams = new URLSearchParams(window.location.search);
     const activeTab = urlParams.get('tab') || 'dash';  
-
-    // Highlight the active menu item based on the query parameter
     $('.menu-content > li').each(function () {
         const link = $(this).find('a').attr('href');
         if (link && link.includes(`tab=${activeTab}`)) {
@@ -64,9 +63,7 @@
             $(this).removeClass('active');
         }
     });
-
-    // Handle menu clicks
-    $('.menu-content > li > a').on('click', function () {
+    $('.menu-content > li').on('click', function () {
         $('.menu-content > li').removeClass('active');  
         $(this).addClass('active');  
     });

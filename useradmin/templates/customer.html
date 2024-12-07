@@ -1,0 +1,190 @@
+{% extends "admin_dashboard.html" %}
+{% load static %}
+{% block main_content %}
+    <div class="container mt-0">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+            <div>
+                <h3><i class="fa fa-users fa-lg"></i> Customer Management</h3>
+            </div>
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
+                <a href="{% url 'admin_dash' %}" class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
+            </div>
+        </div>
+
+        <div class="row" style="display: flex; flex-direction: column; height: 90vh;">
+            {% include 'customer_form.html' %}
+            <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
+            {% include 'customer_table.html' %}
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                const $resizer = $('#resizer');
+                const $tableContainer = $('#table-container');
+                let isResizing = false;
+
+                $("#dialog").dialog({
+                    autoOpen: false,  
+                    modal: true,     
+                    width: 400,       
+                    height: 250,     
+                    
+                });
+                const renderCustomers = (customers) => {
+                    let el = ``;
+                    customers.forEach(customer => {
+                        el += `<tr class="customer-row" data-id="${customer.id}">
+                                    <td>${customer.first_name}</td>
+                                    <td>${customer.last_name}</td>
+                                    <td>${customer.date_of_birth}</td>
+                                    <td>${customer.email}</td>
+                                    <td>${customer.phone_number}</td>
+                                    <td>${customer.address}</td>
+                                    <td>${customer.allergies || "None"}</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger delete-btn" data-id="${customer.id}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>`;
+                    });
+                    $("#customer-table > tbody").html(el);
+
+                    // Add event listeners for row click and delete button
+                    $(".customer-row").on('click', function () {
+                        const customerId = $(this).data('id');
+                        $.get("{% url 'get_customer' %}", { id: customerId }, function (response) {
+                            if (response.status === 'success') {
+                                populateForm(response.customer);
+                            } else {
+                                alert('Failed to load customer details.');
+                            }
+                        });
+                    });
+
+                    $(".delete-btn").on('click', function (event) {
+                        event.stopPropagation();  
+                        const customerId = $(this).data('id');
+
+                        $("#dialog").dialog("option", "title", "Confirm deletion.");
+                        $("#dialog").html(`<p>Do you want to delete this customer?</p>`);
+
+                        $("#dialog").dialog("option", "buttons", {
+                            Ok: function () {
+                                $(this).dialog("close");
+                                $.ajax({
+                                    url: "{% url 'delete_customer' %}",
+                                    type: "DELETE",
+                                    data: JSON.stringify({ id: customerId }),
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (response) {
+                                        if (response.status === 'success') {
+                                            renderCustomers(response.customers.reverse());
+                                        } else {
+                                            alert(response.message);
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        alert('An error occurred: ' + error);
+                                    }
+                                });
+                            },
+                            Cancel: function () {
+                                $(this).dialog("close");
+                            },
+                        });
+                        $("#dialog").dialog("open");
+                    });
+                };
+
+                // Populate form with customer data
+                const populateForm = (customer) => {
+                    $('#id').val(customer.id);
+                    $('#first_name').val(customer.first_name);
+                    $('#last_name').val(customer.last_name);
+                    $('#date_of_birth').val(customer.date_of_birth);
+                    $('#email').val(customer.email);
+                    $('#phone_number').val(customer.phone_number);
+                    $('#address').val(customer.address);
+                    $('#allergies').val(customer.allergies || "");
+                };
+
+                // Fetch customers on page load
+                $.get("{% url 'get_customers' %}", function (response) {
+                    if (response.status === 'success') {
+                        renderCustomers(response.customers);
+                    } else {
+                        alert('Failed to load customers.');
+                    }
+                }).fail(function () {
+                    alert('Error occurred while fetching customers.');
+                });
+
+                // Form submission for add/update customer
+                $('#customerForm').on('submit', function (event) {
+                    event.preventDefault();
+
+                    if (!validateForm()) {
+                        alert('Please fill in all fields before submitting.');
+                        return;
+                    }
+
+                    let formData = {};
+                    $('#customerForm').find('input, textarea, select').each(function () {
+                        formData[$(this).attr('name')] = $(this).val();
+                    });
+                    const customerId = $('#id').val();
+                    let ajaxOptions = {
+                        url: customerId ? "{% url 'update_customer' %}" : "{% url 'add_customer' %}",
+                        type: customerId ? 'PUT' : 'POST',
+                        data: JSON.stringify(formData),
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                $("#dialog").dialog("option", "title", "Success");
+                                $("#dialog").html(`<p>${response.message}</p>`);
+
+                                $("#dialog").dialog("option", "buttons", {
+                                    Ok: function () {
+                                        $(this).dialog("close");
+                                        $('#id').val("")
+                                        $("#customerForm")[0].reset();
+                                    },
+                                });
+                                $("#dialog").dialog("open");
+                                renderCustomers(response.customers.reverse());
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            alert('An error occurred: ' + error);
+                        }
+                    };
+
+                    $.ajax(ajaxOptions);
+                });
+
+                function validateForm() {
+                    let isValid = true;
+                    $('#customerForm').find('input, textarea, select').each(function () {
+                        if ($(this).prop('required') && !$(this).val()) {
+                            isValid = false;
+                            $(this).addClass('is-invalid');
+                        } else {
+                            $(this).removeClass('is-invalid');
+                        }
+                    });
+                    return isValid;
+                }
+            });
+
+            function submitForm() {
+                $('#customerForm').submit();
+            }
+        </script>
+    </div>
+{% endblock %}

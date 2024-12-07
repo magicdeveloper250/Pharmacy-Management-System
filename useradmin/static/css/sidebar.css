@@ -17,7 +17,7 @@
 .nav-side-menu {
     overflow-y: auto;
     font-family: verdana;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 200;
     background-color: #2e353d;
     position: fixed;
@@ -100,11 +100,16 @@
     border-left: 3px solid #2e353d;
     border-bottom: 1px solid #23282e;
     width: inherit;
-  }
+    position: relative;
+}
   .nav-side-menu li a {
-    text-decoration: none;
-    color: #e1ffff;
-    width: inherit;
+   
+      display: block;  
+      width: 100%; 
+      text-decoration: none;
+      color: #e1ffff;
+      padding: 10px 15px;  
+      box-sizing: border-box;  
   }
   .nav-side-menu li a i {
     padding-left: 10px;
@@ -114,11 +119,7 @@
   .nav-side-menu li:hover {
     border-left: 3px solid #d19b3d;
     background-color: #4f5b69;
-    -webkit-transition: all 1s ease;
-    -moz-transition: all 1s ease;
-    -o-transition: all 1s ease;
-    -ms-transition: all 1s ease;
-    transition: all 1s ease;
+    transition: all 0.3s ease;
   }
   @media (max-width: 767px) {
     .nav-side-menu {
