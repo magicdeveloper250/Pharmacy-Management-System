@@ -30,7 +30,7 @@
 
           
             <li data-toggle="collapse" data-target="#supplier" class="{% if active_tab == 'supplier' %}active{% endif %}">
-                <a href="#"><i class="fa fa-truck fa-lg"></i> Supplier  Management</a>
+                <a href="{%url 'supplier'%}?tab=supplier"><i class="fa fa-truck fa-lg"></i> Supplier  Management</a>
             </li>
 
             <li data-toggle="collapse" data-target="#purchase" class="{% if active_tab == 'purchase' %}active{% endif %}">

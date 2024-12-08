@@ -1,0 +1,46 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/customer_form.css' %}">
+<div class="col-md-12 mb-3" style="overflow-y: auto; flex: 1; margin-bottom: 10px; height: 70vh">
+    <form method="POST" action="{% url 'supplier' %}" id="supplierForm">
+        {% csrf_token %}
+        <input type="hidden" id="id" name="supplier_id" value="">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="name" class="form-label">Supplier Name</label>
+                <input type="text" class="form-control" id="name" name="name" maxlength="255" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="contact_name" class="form-label">Contact Name</label>
+                <input type="text" class="form-control" id="contact_name" name="contact_name" maxlength="255" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="contact_email" class="form-label">Contact Email</label>
+                <input type="email" class="form-control" id="contact_email" name="contact_email" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="contact_phone" class="form-label">Contact Phone</label>
+                <input type="text" class="form-control" id="contact_phone" name="contact_phone" maxlength="15" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="address" class="form-label">Address</label>
+                <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="lead_time" class="form-label">Lead Time (in days)</label>
+                <input type="number" class="form-control" id="lead_time" name="lead_time" min="0" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label for="payment_terms" class="form-label">Payment Terms</label>
+                <input type="text" class="form-control" id="payment_terms" name="payment_terms" maxlength="100" required>
+            </div>
+        </div>
+       
+    </form>
+</div>
+

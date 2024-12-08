@@ -1,14 +1,21 @@
 {% load static %}
-<link rel="stylesheet" href="{%static 'css/customer_table.css'%}">
+<link rel="stylesheet" href="{% static 'css/customer_table.css' %}">
 <div id="table-container" class="col-md-12 mb-3" style="height: 40vh; overflow-y: auto; resize: vertical;">
-    
-    <table class="table table-bordered" id="medicine-table">
+    <!-- Search Box -->
+    <div id="table-search-box" class="d-flex justify-content-between mb-2">
+        <div class="input-group w-50">
+            <input type="text" id="search-medicine" class="form-control" placeholder="Search medicine..." aria-label="Search medicine">
+            <button id="search-button" class="btn btn-secondary">
+                <i class="fa fa-search"></i> Search
+            </button>
+        </div>
+    </div>
+
+    <!-- Medicine Table -->
+    <table class="table table-bordered table-striped" id="medicine-table">
         <thead>
-            <div id="table-search-box">
-                <div><input type="text" aria-label="search-medicine"  class="form-control" placeholder="Search..."/></div>
-                <button class="btn btn-secondary"><i class="fa fa-search"></i> Search</button>
-            </div>
             <tr>
+                <th>ID</th>
                 <th>Medicine Name</th>
                 <th>Formulation</th>
                 <th>Strength</th>
@@ -18,9 +25,7 @@
             </tr>
         </thead>
         <tbody>
-          
-            
+            <!-- Data will be dynamically populated -->
         </tbody>
     </table>
 </div>
- 

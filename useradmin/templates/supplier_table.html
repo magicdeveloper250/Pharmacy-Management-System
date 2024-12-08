@@ -1,0 +1,33 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/table.css' %}">
+<div id="supplier-table-container" class="col-md-12 mb-3" style="height: 40vh; overflow-y: auto; resize: vertical;">
+    <!-- Search Box -->
+    <div id="table-search-box" class="d-flex justify-content-between mb-2">
+        <div class="input-group w-50">
+            <input type="text" id="search-supplier" class="form-control" placeholder="Search supplier..." aria-label="Search supplier">
+            <button id="search-button" class="btn btn-secondary">
+                <i class="fa fa-search"></i> Search
+            </button>
+        </div>
+       
+    </div>
+
+    <!-- Supplier Table -->
+    <table class="table table-bordered table-striped" id="supplier-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Contact Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Lead Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated dynamically via JavaScript -->
+        </tbody>
+    </table>
+</div>

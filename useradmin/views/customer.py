@@ -36,9 +36,6 @@ def add_customer(request):
     return JsonResponse({'status': 'success', 'message': 'Customer added successfully!', 'customers': customers})
  
 
-
- 
-
 @csrf_exempt
 @require_http_methods(["PUT"])  
 def update_customer(request):

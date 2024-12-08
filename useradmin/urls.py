@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  dashboard, medicine, customer
+from .views import  dashboard, medicine, customer, supplier
 
 urlpatterns = [
     path("", dashboard.index, name="admin_dash"),
@@ -15,5 +15,11 @@ urlpatterns = [
     path('delete_customer/', customer.delete_customer, name='delete_customer'),
     path('get_customers/', customer.get_customers, name='get_customers'),
     path('get_customer/', customer.get_customer, name='get_customer'),
+    path("supplier/", supplier.index, name="supplier"),
+    path("add_supplier/", supplier.add_supplier, name="add_supplier"),
+    path('update_supplier/', supplier.update_supplier, name='update_supplier'),
+    path('delete_supplier/', supplier.delete_supplier, name='delete_supplier'),
+    path('get_suppliers/', supplier.get_suppliers, name='get_suppliers'),
+    path('get_supplier/', supplier.get_supplier, name='get_supplier'),
 
 ]

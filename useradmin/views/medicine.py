@@ -28,7 +28,7 @@ def upload_medicine(request):
     packaging_type = data.get('packaging_type')
     quantity_in_stock = data.get('quantity_in_stock')
     price = data.get('price')
-    is_prescription_required = data.get('is_prescription_required') == 'on'
+    is_prescription_required = data.get('is_prescription_required')
     Medicine.objects.create(
         name=name,
         formulation=formulation,
@@ -57,7 +57,6 @@ def upload_medicine(request):
 @csrf_exempt
 @require_http_methods(["PUT"])  
 def update_medicine(request):
-  
     try:
         data = json.loads(request.body)
         medicine_id = data.get('medicine_id')
@@ -76,7 +75,7 @@ def update_medicine(request):
         packaging_type = data.get('packaging_type')
         quantity_in_stock = data.get('quantity_in_stock')
         price = data.get('price')
-        is_prescription_required = data.get('is_prescription_required')=="on"
+        is_prescription_required = data.get('is_prescription_required')
 
         medicine = Medicine.objects.get(id=medicine_id)
         medicine.name = name
@@ -120,7 +119,6 @@ def delete_medicine(request):
         data = json.loads(request.body)
         medicine_id = data.get('id')
         medicine = Medicine.objects.get(id=medicine_id)
-        print(data)
         medicine.delete()
         medicines = list(Medicine.objects.values())
         return JsonResponse({'status': 'success', 'message': 'Medicine deleted successfully!', 'medicines': medicines})

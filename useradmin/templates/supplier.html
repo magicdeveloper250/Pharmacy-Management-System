@@ -4,7 +4,7 @@
     <div class="container mt-0">
         <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
             <div>
-                <h3><i class="fa fa-users fa-lg"></i> Customer Management</h3>
+                <h3><i class="fa fa-truck fa-lg"></i> Supplier Management</h3>
             </div>
             <div class="text-right">
                 <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
@@ -13,9 +13,9 @@
         </div>
 
         <div class="row" style="display: flex; flex-direction: column; height: 90vh;">
-            {% include 'customer_form.html' %}
+            {% include 'supplier_form.html' %}
             <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
-            {% include 'customer_table.html' %}
+            {% include 'supplier_table.html' %}
         </div>
 
         <script>
@@ -31,62 +31,62 @@
                     height: 250,     
                     
                 });
-                const renderCustomers = (customers) => {
+
+                // rendering functionalites
+                const renderSuppliers = (suppliers) => {
                     let el = ``;
-                    customers.forEach(customer => {
-                        el += `<tr class="customer-row" data-id="${customer.id}">
-                                    <td>${customer.id}</td>
-                                    <td>${customer.first_name}</td>
-                                    <td>${customer.last_name}</td>
-                                    <td>${customer.date_of_birth}</td>
-                                    <td>${customer.email}</td>
-                                    <td>${customer.phone_number}</td>
-                                    <td>${customer.address}</td>
-                                    <td>${customer.allergies || "None"}</td>
+                    suppliers.forEach(supplier => {
+                        el += `<tr class="supplier-row" data-id="${supplier.id}">
+                                    <td>${supplier.id}</td>
+                                    <td>${supplier.name}</td>
+                                    <td>${supplier.contact_name}</td>
+                                    <td>${supplier.contact_phone}</td>
+                                    <td>${supplier.contact_email}</td>
+                                    <td>${supplier.address}</td>
+                                    <td>${supplier.lead_time} days</td>
                                     <td>
-                                        <button class="btn btn-outline-danger delete-btn" data-id="${customer.id}">
+                                        <button class="btn btn-outline-danger delete-btn" data-id="${supplier.id}">
                                             <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>`;
                     });
-                    $("#customer-table > tbody").html(el);
-                    $(".customer-row").on('click', function () {
-                        const customerId = $(this).data('id');
-                        $.get("{% url 'get_customer' %}", { id: customerId }, function (response) {
+                    $("#supplier-table > tbody").html(el);
+
+                    $(".supplier-row").on('click', function () {
+                        const supplierId = $(this).data('id');
+                        $.get("{% url 'get_supplier' %}", { id: supplierId }, function (response) {
                             if (response.status === 'success') {
-                                populateForm(response.customer);
+                                populateForm(response.supplier);
                             } else {
-                                alert('Failed to load customer details.');
+                                alert('Failed to load supplier details.');
                             }
                         });
                     });
 
                     $(".delete-btn").on('click', function (event) {
                         event.stopPropagation();  
-                        const customerId = $(this).data('id');
-
+                        const supplierId = $(this).data('id');
                         $("#dialog").dialog("option", "title", "Confirm deletion.");
-                        $("#dialog").html(`<p>Do you want to delete this customer?</p>`);
+                        $("#dialog").html(`<p>Do you want to delete this supplier?</p>`);
 
                         $("#dialog").dialog("option", "buttons", {
                             Ok: function () {
                                 $(this).dialog("close");
                                 $.ajax({
-                                    url: "{% url 'delete_customer' %}",
+                                    url: "{% url 'delete_supplier' %}",
                                     type: "DELETE",
-                                    data: JSON.stringify({ id: customerId }),
-                                    processData: false,
-                                    contentType: false,
+                                    data: JSON.stringify({ id: supplierId }),
+                                    contentType: 'application/json',
                                     success: function (response) {
                                         if (response.status === 'success') {
-                                            renderCustomers(response.customers.reverse());
+                                            renderSuppliers(response.suppliers.reverse());
                                         } else {
                                             alert(response.message);
                                         }
                                     },
-                                    error: function (xhr, status, error) {
-                                        alert('An error occurred: ' + error);
+                                    error: function () {
+                                        alert('An error occurred while deleting the supplier.');
                                     }
                                 });
                             },
@@ -95,52 +95,50 @@
                             },
                         });
                         $("#dialog").dialog("open");
-                    });
+                        });
                 };
 
-                // Populate form with customer data
-                const populateForm = (customer) => {
-                    $('#id').val(customer.id);
-                    $('#first_name').val(customer.first_name);
-                    $('#last_name').val(customer.last_name);
-                    $('#date_of_birth').val(customer.date_of_birth);
-                    $('#email').val(customer.email);
-                    $('#phone_number').val(customer.phone_number);
-                    $('#address').val(customer.address);
-                    $('#allergies').val(customer.allergies || "");
+
+                const populateForm = (supplier) => {
+                    $('#id').val(supplier.id);
+                    $('#name').val(supplier.name);
+                    $('#contact_name').val(supplier.contact_name);
+                    $('#contact_email').val(supplier.contact_email);
+                    $('#contact_phone').val(supplier.contact_phone);
+                    $('#address').val(supplier.address);
+                    $('#lead_time').val(supplier.lead_time);
+                    $('#payment_terms').val(supplier.payment_terms);
                 };
 
-                // Fetch customers on page load
-                $.get("{% url 'get_customers' %}", function (response) {
+
+                 $.get("{% url 'get_suppliers' %}", function (response) {
                     if (response.status === 'success') {
-                        renderCustomers(response.customers);
+                        renderSuppliers(response.suppliers);
                     } else {
-                        alert('Failed to load customers.');
+                        alert('Failed to load suppliers.');
                     }
                 }).fail(function () {
-                    alert('Error occurred while fetching customers.');
+                    alert('Error occurred while fetching suppliers.');
                 });
+                
+ 
 
-                // Form submission for add/update customer
-                $('#customerForm').on('submit', function (event) {
+                $('#supplierForm').on('submit', function (event) {
                     event.preventDefault();
-
                     if (!validateForm()) {
                         alert('Please fill in all fields before submitting.');
                         return;
                     }
-
                     let formData = {};
-                    $('#customerForm').find('input, textarea, select').each(function () {
+                    $('#supplierForm').find('input, textarea, select').each(function () {
                         formData[$(this).attr('name')] = $(this).val();
                     });
-                    const customerId = $('#id').val();
+
                     let ajaxOptions = {
-                        url: customerId ? "{% url 'update_customer' %}" : "{% url 'add_customer' %}",
-                        type: customerId ? 'PUT' : 'POST',
+                        url: $('#id').val() ? "{% url 'update_supplier' %}" : "{% url 'add_supplier' %}",
+                        type: $('#id').val() ? 'PUT' : 'POST',
                         data: JSON.stringify(formData),
-                        processData: false,
-                        contentType: false,
+                        contentType: 'application/json',
                         success: function (response) {
                             if (response.status === 'success') {
                                 $("#dialog").dialog("option", "title", "Success");
@@ -149,18 +147,20 @@
                                 $("#dialog").dialog("option", "buttons", {
                                     Ok: function () {
                                         $(this).dialog("close");
+                                        $("#medicineForm")[0].reset();
                                         $('#id').val("")
-                                        $("#customerForm")[0].reset();
                                     },
                                 });
                                 $("#dialog").dialog("open");
-                                renderCustomers(response.customers.reverse());
+                                renderSuppliers(response.suppliers.reverse());
+                                $("#supplierForm")[0].reset();
+                                $('#id').val("");
                             } else {
                                 alert(response.message);
                             }
                         },
-                        error: function (xhr, status, error) {
-                            alert('An error occurred: ' + error);
+                        error: function () {
+                            alert('An error occurred while saving the supplier.');
                         }
                     };
 
@@ -169,7 +169,7 @@
 
                 function validateForm() {
                     let isValid = true;
-                    $('#customerForm').find('input, textarea, select').each(function () {
+                    $('#supplierForm').find('input, textarea, select').each(function () {
                         if ($(this).prop('required') && !$(this).val()) {
                             isValid = false;
                             $(this).addClass('is-invalid');
@@ -179,11 +179,29 @@
                     });
                     return isValid;
                 }
+               
+                $('#search-btn').on('click', function () {
+                    const query = $('#search-input').val().toLowerCase();
+                    $('#customer-table tbody tr').each(function () {
+                        const rowText = $(this).text().toLowerCase();
+                        $(this).toggle(rowText.includes(query));
+                    });
+                });
+
+                $('#search-input').on('input', function () {
+                    const query = $(this).val().toLowerCase();
+                    $('#customer-table tbody tr').each(function () {
+                        const rowText = $(this).text().toLowerCase();
+                        $(this).toggle(rowText.includes(query));
+                    });
+                });
+
             });
 
+            
             function submitForm() {
-                $('#customerForm').submit();
-            }
+                    $('#supplierForm').submit();
+                }
         </script>
     </div>
 {% endblock %}

@@ -36,6 +36,7 @@
                     let el = ``;
                     medicines.forEach(medicine => {
                         el += `<tr class="medicine-row" data-id="${medicine.id}">
+                                    <td>${medicine.id}</td>
                                     <td>${medicine.name}</td>
                                     <td>${medicine.formulation}</td>
                                     <td>${medicine.strength}</td>
@@ -140,6 +141,8 @@
                         formData[$(this).attr('name')] = $(this).val();
                     });
                     const medicineId = $('#id').val();
+
+                    formData.is_prescription_required=$("#is_prescription_required").prop("checked")
                     let ajaxOptions = {
                         url: medicineId ? "{% url 'update_medicine' %}" : "{% url 'upload_medicine' %}",
                         type: medicineId ? 'PUT' : 'POST',
