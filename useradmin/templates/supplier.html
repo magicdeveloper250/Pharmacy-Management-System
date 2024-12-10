@@ -59,7 +59,7 @@
                             if (response.status === 'success') {
                                 populateForm(response.supplier);
                             } else {
-                                alert('Failed to load supplier details.');
+                                showToast('Failed to load supplier details.', "danger")
                             }
                         });
                     });
@@ -69,7 +69,6 @@
                         const supplierId = $(this).data('id');
                         $("#dialog").dialog("option", "title", "Confirm deletion.");
                         $("#dialog").html(`<p>Do you want to delete this supplier?</p>`);
-
                         $("#dialog").dialog("option", "buttons", {
                             Ok: function () {
                                 $(this).dialog("close");
@@ -80,13 +79,14 @@
                                     contentType: 'application/json',
                                     success: function (response) {
                                         if (response.status === 'success') {
+                                            showToast(response.message, "success")
                                             renderSuppliers(response.suppliers.reverse());
                                         } else {
-                                            alert(response.message);
+                                            showToast(response.message, "danger")
                                         }
                                     },
                                     error: function () {
-                                        alert('An error occurred while deleting the supplier.');
+                                        showToast('An error occurred while deleting the supplier.', "danger")
                                     }
                                 });
                             },
@@ -115,10 +115,10 @@
                     if (response.status === 'success') {
                         renderSuppliers(response.suppliers);
                     } else {
-                        alert('Failed to load suppliers.');
+                        showToast('Failed to load suppliers.', "danger")
                     }
                 }).fail(function () {
-                    alert('Error occurred while fetching suppliers.');
+                    showToast('Error occurred while fetching suppliers.', "danger")
                 });
                 
  
@@ -126,41 +126,32 @@
                 $('#supplierForm').on('submit', function (event) {
                     event.preventDefault();
                     if (!validateForm()) {
-                        alert('Please fill in all fields before submitting.');
+                        showToast('Please fill in all fields before submitting.', "danger")
                         return;
                     }
                     let formData = {};
                     $('#supplierForm').find('input, textarea, select').each(function () {
                         formData[$(this).attr('name')] = $(this).val();
                     });
-
+                    const supplierId= $('#id').val();
                     let ajaxOptions = {
-                        url: $('#id').val() ? "{% url 'update_supplier' %}" : "{% url 'add_supplier' %}",
-                        type: $('#id').val() ? 'PUT' : 'POST',
+                        url:supplierId ? "{% url 'update_supplier' %}" : "{% url 'add_supplier' %}",
+                        type: supplierId ? 'PUT' : 'POST',
                         data: JSON.stringify(formData),
                         contentType: 'application/json',
                         success: function (response) {
                             if (response.status === 'success') {
-                                $("#dialog").dialog("option", "title", "Success");
-                                $("#dialog").html(`<p>${response.message}</p>`);
-
-                                $("#dialog").dialog("option", "buttons", {
-                                    Ok: function () {
-                                        $(this).dialog("close");
-                                        $("#medicineForm")[0].reset();
-                                        $('#id').val("")
-                                    },
-                                });
-                                $("#dialog").dialog("open");
-                                renderSuppliers(response.suppliers.reverse());
+                                showToast(response.message, "success")
                                 $("#supplierForm")[0].reset();
                                 $('#id').val("");
+                                const jsonSuppliers =  supplierId ? response.suppliers : response.suppliers.reverse();
+                                renderSuppliers(jsonSuppliers);
                             } else {
-                                alert(response.message);
+                                showToast(response.message, "danger")
                             }
                         },
                         error: function () {
-                            alert('An error occurred while saving the supplier.');
+                            showToast('An error occurred while saving the supplier.', "danger")
                         }
                     };
 
@@ -180,19 +171,10 @@
                     return isValid;
                 }
                
-                $('#search-btn').on('click', function () {
-                    const query = $('#search-input').val().toLowerCase();
-                    $('#customer-table tbody tr').each(function () {
-                        const rowText = $(this).text().toLowerCase();
-                        $(this).toggle(rowText.includes(query));
-                    });
-                });
-
-                $('#search-input').on('input', function () {
-                    const query = $(this).val().toLowerCase();
-                    $('#customer-table tbody tr').each(function () {
-                        const rowText = $(this).text().toLowerCase();
-                        $(this).toggle(rowText.includes(query));
+                $('#search-supplier').on('input', function () {
+                    let searchValue = $(this).val().toLowerCase();
+                    $('#supplier-table tbody tr').filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
                     });
                 });
 

@@ -1,0 +1,310 @@
+{% extends "admin_dashboard.html" %}
+{% load static %}
+{% block main_content %}
+    <div class="container mt-0">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+            <div>
+                <h3><i class="fa fa-shopping-cart fa-lg"></i> Sales Management</h3>
+            </div>
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
+                <a href="{% url 'admin_dash' %}" class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
+            </div>
+        </div>
+
+        <div class="row" style="display: flex; flex-direction: column; height: 90vh;">
+            {% include 'sales_form.html' %}
+            <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
+            {% include 'sales_table.html' %}
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                const $resizer = $('#resizer');
+                const $tableContainer = $('#sales-table-container');
+                let isResizing = false;
+
+                $("#dialog").dialog({
+                    autoOpen: false,
+                    modal: true,
+                    width: 400,
+                    height: 250,
+                });
+
+                const renderSales = (sales) => {
+                    let el = ``;
+                    sales.forEach(sale => {
+                        el += `<tr class="sale-row" data-id="${sale.id}">
+                                    <td>${sale.id}</td>
+                                    <td class="customer-cell clickable-cell" data-id="${sale.customer.id}">${sale.customer.first_name} ${sale.customer.last_name}</td>
+                                    <td class="medicine-cell clickable-cell" data-id="${sale.medicine.id}">${sale.medicine.name}</td>
+                                    <td>${sale.quantity}</td>
+                                    <td>${formattedPrice(sale.total_price)}</td>
+                                    <td>${sale.sale_date}</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger delete-btn" data-id="${sale.id}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>`;
+                    });
+                    $("#sales-table > tbody").html(el);
+
+
+                    $(document).on('click', '.medicine-cell', function () {
+                    const medicineId = $(this).data('id');
+
+                    $.get("{% url 'get_medicine' %}", { id: medicineId }, function (response) {
+                        if (response.status === 'success') {
+                            populateModal('Medicine Details', response.medicine, [
+                                { key: 'name', label: 'Name' },
+                                { key: 'formulation', label: 'Formulation' },
+                                { key: 'strength', label: 'Strength' },
+                                { key: 'price', label: 'P/U' },
+                                { key: 'quantity_in_stock', label: 'Quantity' },
+                                { key: 'manufacturer', label: 'Manufacturer' },
+                                { key: 'shelf_life', label: 'Shelf Life' },
+                                { key: 'storage_conditions', label: 'Storage Conditions' },
+                            ]);
+                        } else {
+                            showToast('Failed to load medicine details.', "danger");
+                        }
+                    }).fail(() => showToast('Failed to load medicine details.', "danger"));
+                });
+
+                $(document).on('click', '.customer-cell', function () {
+                    const supplierId = $(this).data('id');
+
+                    $.get("{% url 'get_customer' %}", { id: supplierId }, function (response) {
+                        if (response.status === 'success') {
+                            populateModal('Customer Details', response.customer, [
+                                { key: 'first_name', label: 'First Name' },
+                                { key: 'last_name', label: 'Last Name' },
+                                { key: 'phone_number', label: 'Phone' },
+                                { key: 'date_of_birth', label: 'DOB' },
+                                { key: 'address', label: 'Address' },
+                                { key: 'allergies', label: 'Allergies' },
+                                
+                               
+                            ]);
+                        } else {
+                            showToast('Failed to load supplier details.', "danger");
+                        }
+                    }).fail(() => showToast('Failed to load supplier details.', "danger"));
+                });
+
+                    $(".sale-row").on('click', function () {
+                        const saleId = $(this).data('id');
+                        $.get("{% url 'get_sale' %}", { id: saleId }, function (response) {
+                            if (response.status === 'success') {
+                                populateForm(response.sale);
+                            } else {
+                                showToast('Failed to load sale details.', "danger");
+                            }
+                        }).fail(() => showToast('Failed to load sale details.', "danger"));
+                    });
+
+                    $(".delete-btn").on('click', function (event) {
+                        event.stopPropagation();
+                        const saleId = $(this).data('id');
+
+                        $("#dialog").dialog("option", "title", "Confirm deletion.");
+                        $("#dialog").html(`<p>Do you want to delete this sale?</p>`);
+
+                        $("#dialog").dialog("option", "buttons", {
+                            Ok: function () {
+                                $(this).dialog("close");
+                                $.ajax({
+                                    url: "{% url 'delete_sale' %}",
+                                    type: "DELETE",
+                                    data: JSON.stringify({ id: saleId }),
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (response) {
+                                        if (response.status === 'success') {
+                                            showToast(response.message, "success");
+                                            renderSales(response.sales.reverse());
+                                        } else {
+                                            showToast(response.message, "danger");
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        showToast('An error occurred: ' + error, "danger");
+                                    }
+                                });
+                            },
+                            Cancel: function () {
+                                $(this).dialog("close");
+                            },
+                        });
+                        $("#dialog").dialog("open");
+                    });
+                };
+
+                function populateModal(title, data, fields) {
+                    $('#detailsModalLabel').text(title);
+
+                    let headerRow = '<tr>';
+                    let bodyRow = '<tr>';
+
+                    fields.forEach(field => {
+                        headerRow += `<th>${field.label}</th>`;
+                        bodyRow += `<td>${data[field.key] || 'N/A'}</td>`;
+                    });
+
+                    headerRow += '</tr>';
+                    bodyRow += '</tr>';
+
+                    $('#modalTableHeader').html(headerRow);
+                    $('#modalTableBody').html(bodyRow);
+
+                    $('#detailsModal').modal('show');
+                }
+                const populateForm = (sale) => {
+                    $('#id').val(sale.id);
+                    $('#quantity').val(sale.quantity);
+                    $('#total_price').val(sale.total_price);
+                    $('#sale_date').val(sale.sale_date);
+
+                    $('#customer').val(sale.customer.id);  
+                    $('#customer option').filter(function() {
+                        return $(this).val() == sale.customer.id;
+                    }).text(sale.customer.name); 
+
+                    $('#product').val(sale.product.id);  
+                    $('#product option').filter(function() {
+                        return $(this).val() == sale.product.id;
+                    }).text(`${sale.product.name} - $${sale.product.price}`);  
+                };
+
+                // Fetch sales on page load
+                $.get("{% url 'get_sales' %}", function (response) {
+                    if (response.status === 'success') {
+                        renderSales(response.sales);
+                    } else {
+                        showToast('Failed to load sales.', "danger");
+                    }
+                }).fail(function () {
+                    showToast('Error occurred while fetching sales.', "danger");
+                });
+
+                // Form submission for add/update sale
+                $('#salesForm').on('submit', function (event) {
+                    event.preventDefault();
+
+                    if (!validateForm()) {
+                        showToast('Please fill in all fields before submitting.', "danger");
+                        return;
+                    }
+
+                    let formData = {};
+                    $('#salesForm').find('input, select').each(function () {
+                        formData[$(this).attr('name')] = $(this).val();
+                    });
+                    let prescriptionData= {};
+                    $('#prescriptionForm').find('input, select').each(function () {
+                        prescriptionData[$(this).attr('name')] = $(this).val();
+                    });
+                    const saleId = $('#id').val();
+                    let ajaxOptions = {
+                        url: saleId ? "{% url 'update_sale' %}" : "{% url 'add_sale' %}",
+                        type: saleId ? 'PUT' : 'POST',
+                        data: JSON.stringify({"sale":formData, "perscription":prescriptionData}),
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                showToast(response.message, "success");
+                                $('#id').val("");
+                                $("#salesForm")[0].reset();
+                                const jsonSales = saleId ? response.sales : response.sales.reverse();
+                                renderSales(jsonSales);
+                            } else {
+                                showToast(response.message, "danger");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            showToast('An error occurred: ' + error, "danger");
+                        }
+                    };
+
+                    $.ajax(ajaxOptions);
+                });
+
+
+                $('#medicine').on('change', function () {
+                    const selectedOption = $(this).find('option:selected');
+                    const isPrescriptionRequired = selectedOption.data('prescription') === true;
+
+                    if (isPrescriptionRequired) {
+                        $('#prescriptionModal').modal('show');
+                    }
+                });
+
+                function updateTotalPrice() {
+                    const selectedOption = $('#medicine').find('option:selected');
+                    const price = parseFloat(selectedOption.data('price')) || 0;
+                    const quantity = parseInt($('#quantity').val()) || 0;  
+                    const totalPrice = (price * quantity).toFixed(2); 
+                   
+                    $('#total_price_display').text(formattedPrice(totalPrice));  
+                }
+                $('#savePrescription').on('click', function () {
+                    const prescriptionForm = $('#prescriptionForm')[0];
+                    if (prescriptionForm.checkValidity()) {
+                        $('#prescriptionModal').modal('hide');
+                    } else {
+                        prescriptionForm.reportValidity();
+                    }
+                });
+
+                            
+                $('#medicine').on('change', function () {
+                    updateTotalPrice();
+                });
+
+                $('#quantity').on('input', function () {
+                    updateTotalPrice();
+                });
+
+                $('#search-sales').on('input', function () {
+                    const searchTerm = $searchInput.val().toLowerCase();
+                    $('#sales-table tbody').find('tr').each(function () {
+                        const rowText = $(this).text().toLowerCase();
+                        $(this).toggle(rowText.includes(searchTerm));
+                    });
+                });
+
+                $('#search-button').on('click', function () {
+                    $('#search-sales').trigger('input');
+                });
+
+                function validateForm() {
+                    let isValid = true;
+                    $('#salesForm').find('input, select').each(function () {
+                        if ($(this).prop('required') && !$(this).val()) {
+                            isValid = false;
+                            $(this).addClass('is-invalid');
+                        } else {
+                            $(this).removeClass('is-invalid');
+                        }
+                    });
+                    return isValid;
+                }
+
+                function calculateTotalPrice() {
+                    let quantity = parseInt($('#quantity').val()) || 0;
+                    let price = parseFloat($('#product option:selected').data('price')) || 0;
+                    $('#total_price').val((quantity * price).toFixed(2));
+                }
+
+                $('#quantity').on('input', calculateTotalPrice);
+                $('#product').on('change', calculateTotalPrice);
+            });
+
+            function submitForm() {
+                $('#salesForm').submit();
+            }
+        </script>
+    </div>
+{% endblock %}

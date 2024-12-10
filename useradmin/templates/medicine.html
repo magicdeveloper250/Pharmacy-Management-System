@@ -42,7 +42,7 @@
                                     <td>${medicine.strength}</td>
                                     <td>${medicine.batch_number}</td>
                                     <td>${medicine.quantity_in_stock}</td>
-                                    <td>$${medicine.price}</td>
+                                    <td>${formattedPrice(medicine.price)}</td>
                                     <td><button class="btn btn-outline-danger delete-btn" data-id="${medicine.id}"><i class="fa fa-trash"></i></button></td>
                                 </tr>`
                     });
@@ -53,9 +53,9 @@
                             if (response.status === 'success') {
                                 populateForm(response.medicine);
                             } else {
-                                alert('Failed to load medicine details.');
+                                showToast('Failed to load medicine details.', "success")
                             }
-                        });
+                        }).fail(()=>showToast('Failed to load medicine details.', "danger"))
                     });
 
                     $(".delete-btn").on('click', function(event) {
@@ -79,16 +79,16 @@
                                                 const jsonMedicines = response.medicines.reverse();
                                                 renderMedicines(jsonMedicines);  
                                             } else {
-                                                alert(response.message);
+                                                showToast(response.message, "danger")
                                             }
                                         },
                                         error: function(xhr, status, error) {
-                                            alert('An error occurred: ' + error);
+                                            showToast('An error occurred: ' + error, "danger")
                                         }
                                     });
                                        
                                     },
-                                    Cancel: function () {
+                                    No: function () {
                                         $(this).dialog("close");
                                     },
                                 });
@@ -97,7 +97,12 @@
                         
                     });
                 };
-
+                $('#search-medicine').on('input', function () {
+                    let searchValue = $(this).val().toLowerCase();
+                    $('#medicine-table tbody tr').filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+                    });
+                });
                 const populateForm = (medicine) => {
                     $('#id').val(medicine.id);
                     $('#name').val(medicine.name);
@@ -122,17 +127,17 @@
                     if (response.status === 'success') {
                         renderMedicines(response.medicines);
                     } else {
-                        alert('Failed to load medicines.');
+                        showToast('Failed to load medicines.', "danger")
                     }
                 }).fail(function() {
-                    alert('Error occurred while fetching medicines.');
+                    showToast('Error occurred while fetching medicines.', "danger")
                 });
 
                 $('#medicineForm').on('submit', function (event) {
                     event.preventDefault(); 
 
                     if (!validateForm()) {
-                        alert('Please fill in all fields before submitting.');
+                        showToast('Please fill in all fields before submitting.', "danger")
                         return;
                     }
  
@@ -151,25 +156,18 @@
                         contentType: false,
                         success: function (response) {
                             if (response.status === 'success') {
-                                $("#dialog").dialog("option", "title", "Success");
-                                $("#dialog").html(`<p>${response.message}</p>`);
-
-                                $("#dialog").dialog("option", "buttons", {
-                                    Ok: function () {
-                                        $(this).dialog("close");
-                                        $("#medicineForm")[0].reset();
-                                        $('#id').val("")
-                                    },
-                                });
-                                $("#dialog").dialog("open");
+                                showToast(response.message, "success")
+                                $("#medicineForm")[0].reset();
+                                $('#id').val("")
                                 const jsonMedicines = medicineId ? response.medicines : response.medicines.reverse();
                                 renderMedicines(jsonMedicines);
                             } else {
-                                alert(response.message);
+                                showToast(response.message, "danger")
+                               
                             }
                         },
                         error: function (xhr, status, error) {
-                            alert('An error occurred: ' + error);
+                            showToast('An error occurred: ' + error, "danger")
                         }
                     };
 

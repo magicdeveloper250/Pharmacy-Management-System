@@ -107,16 +107,7 @@ def get_supplier(request):
         supplier = Supplier.objects.get(id=supplier_id)
         data = {
             'status': 'success',
-            'supplier': {
-                'id': supplier.id,
-                'name': supplier.name,
-                'contact_name': supplier.contact_name,
-                'contact_phone': supplier.contact_phone,
-                'contact_email': supplier.contact_email,
-                'address': supplier.address,
-                'lead_time':supplier.lead_time,
-                'payment_terms':supplier.payment_terms
-            }
+            'supplier': supplier.to_json()
         }
         return JsonResponse(data)
     except Supplier.DoesNotExist:

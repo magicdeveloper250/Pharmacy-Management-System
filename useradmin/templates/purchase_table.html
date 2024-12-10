@@ -1,0 +1,39 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/table.css' %}">
+<div id="purchase-table-container" class="col-md-12 mb-3" style="height: 40vh; overflow-y: auto; resize: vertical;">
+    <!-- Search Box -->
+    <div id="table-search-box" class="d-flex justify-content-between mb-2">
+        <div class="input-group w-50">
+            <input type="text" id="search-purchase" class="form-control" placeholder="Search purchase..." aria-label="Search purchase">
+            <button id="search-button" class="btn btn-secondary">
+                <i class="fa fa-search"></i> Search
+            </button>
+        </div>
+    </div>
+
+    <!-- Purchase Table -->
+    <table class="table table-bordered table-striped" id="purchase-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Supplier</th>
+                <th>Medicine</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+                <th>Purchase Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in purchases %}
+                <tr>
+                    <td>{{ purchase.id }}</td>
+                    <td>{{ purchase.consumer.first_name }} {{ purchase.consumer.last_name }}</td>
+                    <td>{{ purchase.medicine.name }}</td>
+                    <td>{{ purchase.quantity }}</td>
+                    <td>${{ purchase.total_price }}</td>
+                    <td>{{ purchase.purchase_date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

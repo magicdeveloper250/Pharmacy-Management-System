@@ -148,25 +148,7 @@ def get_medicine(request):
         medicine = Medicine.objects.get(id=medicine_id)
         data = {
             'status': 'success',
-            'medicine': {
-                'id': medicine.id,
-                'name': medicine.name,
-                'formulation': medicine.formulation,
-                'strength': medicine.strength,
-                'expiration_date': medicine.expiration_date,
-                'batch_number': medicine.batch_number,
-                'storage_conditions': medicine.storage_conditions,
-                'manufacturer': medicine.manufacturer,
-                'active_ingredients': medicine.active_ingredients,
-                'shelf_life': medicine.shelf_life,
-                'route_of_administration': medicine.route_of_administration,
-                'dosage_instructions': medicine.dosage_instructions,
-                'side_effects': medicine.side_effects,
-                'packaging_type': medicine.packaging_type,
-                'quantity_in_stock': medicine.quantity_in_stock,
-                'price': medicine.price,
-                'is_prescription_required': medicine.is_prescription_required,
-            }
+            'medicine':  medicine.to_json()
         }
         return JsonResponse(data)
     except Medicine.DoesNotExist:

@@ -34,10 +34,10 @@
             </li>
 
             <li data-toggle="collapse" data-target="#purchase" class="{% if active_tab == 'purchase' %}active{% endif %}">
-                <a href="#"><i class="fa fa-shopping-cart fa-lg"></i> Purchase Management</a>
+                <a href="{%url 'purchase'%}?tab=purchase"><i class="fa fa-shopping-cart fa-lg"></i> Purchase Management</a>
             </li>
             <li data-toggle="collapse" data-target="#purchase" class="{% if active_tab == 'sales' %}active{% endif %}">
-                <a href="#"><i class="fas fa-dollar-sign fa-lg"></i> Sales Management</a>
+                <a href="{%url 'sales'%}?tab=sales"><i class="fas fa-dollar-sign fa-lg"></i> Sales Management</a>
             </li>
              
 

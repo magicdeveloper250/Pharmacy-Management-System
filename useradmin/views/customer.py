@@ -61,7 +61,7 @@ def update_customer(request):
         customer.phone_number= phone_number
         customer.save()
         customers = list(Customer.objects.values())
-        return JsonResponse({'status': 'success', 'message': 'Medicine updated successfully!', 'customers': customers}, status=201)
+        return JsonResponse({'status': 'success', 'message': 'customer updated successfully!', 'customers': customers}, status=201)
 
     except Customer.DoesNotExist:
         return JsonResponse({
@@ -113,16 +113,7 @@ def get_customer(request):
         customer = Customer.objects.get(id=customer_id)
         data = {
             'status': 'success',
-            'customer': {
-                'id': customer.id,
-                'first_name': customer.first_name,
-                'last_name': customer.last_name,
-                'email': customer.email,
-                'phone_number': customer.phone_number,
-                "date_of_birth": customer.date_of_birth,
-                "address":customer.address,
-                "allergies":customer.allergies
-            }
+            'customer': customer.to_json()
         }
         return JsonResponse(data)
     except Customer.DoesNotExist:

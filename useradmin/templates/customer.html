@@ -57,9 +57,9 @@
                             if (response.status === 'success') {
                                 populateForm(response.customer);
                             } else {
-                                alert('Failed to load customer details.');
+                                showToast('Failed to load customer details.', "danger");
                             }
-                        });
+                        }).fail(()=>showToast('Failed to load customer details.', "danger"));
                     });
 
                     $(".delete-btn").on('click', function (event) {
@@ -82,11 +82,11 @@
                                         if (response.status === 'success') {
                                             renderCustomers(response.customers.reverse());
                                         } else {
-                                            alert(response.message);
+                                            showToast(response.message, "danger");
                                         }
                                     },
                                     error: function (xhr, status, error) {
-                                        alert('An error occurred: ' + error);
+                                        showToast('An error occurred: ' + error, "danger");
                                     }
                                 });
                             },
@@ -98,6 +98,13 @@
                     });
                 };
 
+
+                $('#search-customer').on('input', function () {
+                    let searchValue = $(this).val().toLowerCase();
+                    $('#customer-table tbody tr').filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+                    });
+                });
                 // Populate form with customer data
                 const populateForm = (customer) => {
                     $('#id').val(customer.id);
@@ -115,10 +122,10 @@
                     if (response.status === 'success') {
                         renderCustomers(response.customers);
                     } else {
-                        alert('Failed to load customers.');
+                        showToast('Failed to load customers.', "danger");
                     }
                 }).fail(function () {
-                    alert('Error occurred while fetching customers.');
+                    showToast('Error occurred while fetching customers.', "danger");
                 });
 
                 // Form submission for add/update customer
@@ -126,7 +133,7 @@
                     event.preventDefault();
 
                     if (!validateForm()) {
-                        alert('Please fill in all fields before submitting.');
+                        showToast('Please fill in all fields before submitting.', "danger");
                         return;
                     }
 
@@ -143,24 +150,17 @@
                         contentType: false,
                         success: function (response) {
                             if (response.status === 'success') {
-                                $("#dialog").dialog("option", "title", "Success");
-                                $("#dialog").html(`<p>${response.message}</p>`);
-
-                                $("#dialog").dialog("option", "buttons", {
-                                    Ok: function () {
-                                        $(this).dialog("close");
-                                        $('#id').val("")
-                                        $("#customerForm")[0].reset();
-                                    },
-                                });
-                                $("#dialog").dialog("open");
+                                showToast(response.message, "success")
+                                $('#id').val("")
+                                $("#customerForm")[0].reset();
+                                const jsonCustomers = customerId ? response.customers : response.customers.reverse();
                                 renderCustomers(response.customers.reverse());
                             } else {
-                                alert(response.message);
+                                showToast(response.message, "danger")
                             }
                         },
                         error: function (xhr, status, error) {
-                            alert('An error occurred: ' + error);
+                            showToast('An error occurred: ' + error, "danger");
                         }
                     };
 

@@ -1,0 +1,264 @@
+{% extends "admin_dashboard.html" %}
+{% load static %}
+{% block main_content %}
+    <div class="container mt-0">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+            <div>
+                <h3><i class="fa fa-shopping-cart fa-lg"></i> Purchase Management</h3>
+            </div>
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
+                <a href="{% url 'admin_dash' %}" class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
+            </div>
+        </div>
+
+        <div class="row" style="display: flex; flex-direction: column; height: 90vh;">
+            {% include 'purchase_form.html' %}
+            <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
+            {% include 'purchase_table.html' %}
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                const $resizer = $('#resizer');
+                const $tableContainer = $('#purchase-table-container');
+                let isResizing = false;
+
+                $("#dialog").dialog({
+                    autoOpen: false,
+                    modal: true,
+                    width: 400,
+                    height: 250,
+                });
+
+                const renderPurchases = (purchases) => {
+                    let el = ``;
+                    purchases.forEach(purchase => {
+                        el += `<tr class="purchase-row" data-id="${purchase.id}">
+                                    <td>${purchase.id}</td>
+                                    <td class="supplier-cell clickable-cell" data-id="${purchase.supplier.id}">${purchase.supplier.contact_name}</td>
+                                    <td class="medicine-cell clickable-cell" data-id="${purchase.medicine.id}">${purchase.medicine.name}</td>
+                                    <td>${purchase.quantity}</td>
+                                    <td>${formattedPrice(purchase.total_price)}</td>
+                                    <td>${purchase.purchase_date}</td>
+                                    <td>
+                                        <button class="btn btn-outline-danger delete-btn" data-id="${purchase.id}">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>`;
+                    });
+                    $("#purchase-table > tbody").html(el);
+
+                    $(".purchase-row").on('click', function () {
+                        const purchaseId = $(this).data('id');
+                        $.get("{% url 'get_purchase' %}", { id: purchaseId }, function (response) {
+                            if (response.status === 'success') {
+                                populateForm(response.purchase);
+                            } else {
+                                showToast('Failed to load purchase details.', "danger");
+                            }
+                        }).fail(() => showToast('Failed to load purchase details.', "danger"));
+                    });
+
+                    $(".delete-btn").on('click', function (event) {
+                        event.stopPropagation();
+                        const purchaseId = $(this).data('id');
+
+                        $("#dialog").dialog("option", "title", "Confirm deletion.");
+                        $("#dialog").html(`<p>Do you want to delete this purchase?</p>`);
+
+                        $("#dialog").dialog("option", "buttons", {
+                            Ok: function () {
+                                $(this).dialog("close");
+                                $.ajax({
+                                    url: "{% url 'delete_purchase' %}",
+                                    type: "DELETE",
+                                    data: JSON.stringify({ id: purchaseId }),
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (response) {
+                                        if (response.status === 'success') {
+                                            showToast(response.message, "success");
+                                            renderPurchases(response.purchases.reverse());
+                                        } else {
+                                            showToast(response.message, "danger");
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        showToast('An error occurred: ' + error, "danger");
+                                    }
+                                });
+                            },
+                            Cancel: function () {
+                                $(this).dialog("close");
+                            },
+                        });
+                        $("#dialog").dialog("open");
+                    });
+                };
+
+                const populateForm = (purchase) => {
+
+                $('#id').val(purchase.id);
+                $('#quantity').val(purchase.quantity);
+                $('#total_price').val(purchase.total_price);
+                $('#purchase_date').val(purchase.purchase_date);
+
+                $('#supplier').val(purchase.supplier.id);  
+                $('#supplier option').filter(function() {
+                    return $(this).val() == purchase.supplier.id;
+                }).text(purchase.supplier.contact_name); 
+                $('#medicine').val(purchase.medicine.id);  
+                $('#medicine option').filter(function() {
+                    return $(this).val() == purchase.medicine.id;
+                }).text(`${purchase.medicine.name} - $${purchase.medicine.price}`);  
+            };
+
+                $.get("{% url 'get_purchases' %}", function (response) {
+                    if (response.status === 'success') {
+                        renderPurchases(response.purchases);
+                    } else {
+                        showToast('Failed to load purchases.', "danger");
+                    }
+                }).fail(function () {
+                    showToast('Error occurred while fetching purchases.', "danger");
+                });
+                $('#purchaseForm').on('submit', function (event) {
+                    event.preventDefault();
+
+                    if (!validateForm()) {
+                        showToast('Please fill in all fields before submitting.', "danger");
+                        return;
+                    }
+
+                    let formData = {};
+                    $('#purchaseForm').find('input, select').each(function () {
+                        formData[$(this).attr('name')] = $(this).val();
+                    });
+                    const purchaseId = $('#id').val();
+                    let ajaxOptions = {
+                        url: purchaseId ? "{% url 'update_purchase' %}" : "{% url 'add_purchase' %}",
+                        type: purchaseId ? 'PUT' : 'POST',
+                        data: JSON.stringify(formData),
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                showToast(response.message, "success");
+                                $('#id').val("");
+                                $("#purchaseForm")[0].reset();
+                                const jsonPurchases = purchaseId ? response.purchases : response.purchases.reverse();
+                                console.log(jsonPurchases)
+                                renderPurchases(jsonPurchases);
+                            } else {
+                                showToast(response.message, "danger");
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            showToast('An error occurred: ' + error, "danger");
+                        }
+                    };
+
+                    $.ajax(ajaxOptions);
+                });
+
+
+                $('#search-purchase').on('input', function () {
+                    let searchValue = $(this).val().toLowerCase();
+                    $('#purchase-table tbody tr').filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
+                    });
+                });
+
+
+                $(document).on('click', '.medicine-cell', function () {
+                    const medicineId = $(this).data('id');
+
+                    $.get("{% url 'get_medicine' %}", { id: medicineId }, function (response) {
+                        if (response.status === 'success') {
+                            populateModal('Medicine Details', response.medicine, [
+                                { key: 'name', label: 'Name' },
+                                { key: 'formulation', label: 'Formulation' },
+                                { key: 'strength', label: 'Strength' },
+                                { key: 'price', label: 'P/U' },
+                                { key: 'quantity_in_stock', label: 'Quantity' },
+                                { key: 'manufacturer', label: 'Manufacturer' },
+                                { key: 'shelf_life', label: 'Shelf Life' },
+                                { key: 'storage_conditions', label: 'Storage Conditions' },
+                            ]);
+                        } else {
+                            showToast('Failed to load medicine details.', "danger");
+                        }
+                    }).fail(() => showToast('Failed to load medicine details.', "danger"));
+                });
+
+                $(document).on('click', '.supplier-cell', function () {
+                    const supplierId = $(this).data('id');
+
+                    $.get("{% url 'get_supplier' %}", { id: supplierId }, function (response) {
+                        if (response.status === 'success') {
+                            populateModal('Supplier Details', response.supplier, [
+                                { key: 'contact_name', label: 'Contact Name' },
+                                { key: 'contact_email', label: 'Email' },
+                                { key: 'contact_phone', label: 'Phone' },
+                                { key: 'address', label: 'Address' },
+                               
+                            ]);
+                        } else {
+                            showToast('Failed to load supplier details.', "danger");
+                        }
+                    }).fail(() => showToast('Failed to load supplier details.', "danger"));
+                });
+
+                function populateModal(title, data, fields) {
+                    $('#detailsModalLabel').text(title);
+
+                    let headerRow = '<tr>';
+                    let bodyRow = '<tr>';
+
+                    fields.forEach(field => {
+                        headerRow += `<th>${field.label}</th>`;
+                        bodyRow += `<td>${data[field.key] || 'N/A'}</td>`;
+                    });
+
+                    headerRow += '</tr>';
+                    bodyRow += '</tr>';
+
+                    $('#modalTableHeader').html(headerRow);
+                    $('#modalTableBody').html(bodyRow);
+
+                    $('#detailsModal').modal('show');
+                }
+
+
+                function validateForm() {
+                    let isValid = true;
+                    $('#purchaseForm').find('input, select').each(function () {
+                        if ($(this).prop('required') && !$(this).val()) {
+                            isValid = false;
+                            $(this).addClass('is-invalid');
+                        } else {
+                            $(this).removeClass('is-invalid');
+                        }
+                    });
+                    return isValid;
+                }
+
+                function calculateTotalPrice() {
+                    let quantity = parseInt($('#quantity').val()) || 0;
+                    let price = parseFloat($('#medicine option:selected').data('price')) || 0;
+                    $('#total_price_display').text(formattedPrice((quantity * price).toFixed(2)))
+                    
+                }
+
+                $('#quantity').on('input', calculateTotalPrice);
+                $('#medicine').on('change', calculateTotalPrice);
+            });
+
+            function submitForm() {
+                $('#purchaseForm').submit();
+            }
+        </script>
+    </div>
+{% endblock %}
