@@ -5,7 +5,9 @@
     <div class="brand">
         <img src="{% static 'images/avatar.jpg' %}" alt="profile image" class="avatar">
         <span>{{ request.user.username }}</span>
-        <a href="{%url 'logout'%}">Logout</a>
+        <a href="{% url 'logout' %}" class="btn btn-outline-danger mb-3">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
     </div>
     <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
 
@@ -38,13 +40,6 @@
             </li>
             <li data-toggle="collapse" data-target="#purchase" class="{% if active_tab == 'sales' %}active{% endif %}">
                 <a href="{%url 'sales'%}?tab=sales"><i class="fas fa-dollar-sign fa-lg"></i> Sales Management</a>
-            </li>
-             
-
-            <li>
-                <a href="#">
-                    <i class="fa fa-search fa-lg"></i> Search
-                </a>
             </li>
         </ul>
     </div>

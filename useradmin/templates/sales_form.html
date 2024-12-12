@@ -18,7 +18,7 @@
                 <select class="form-control" id="medicine" name="medicine" required>
                     {% for medicine in medicines %}
                         <option value="{{ medicine.id }}" data-prescription="{{ medicine.is_prescription_required|yesno:'true,false' }}" data-price="{{ medicine.price }}">
-                            {{ medicine.name }} - ${{ medicine.price }}
+                            {{ medicine.name }} - RWF{{ medicine.price }}
                         </option>
                     {% endfor %}
                 </select>
@@ -31,7 +31,7 @@
 
             <div class="col-md-6 mb-3">
                 <label for="total_price" class="form-label">Total Price</label>
-                <div id="total_price_display">$0.00</div>
+                <div id="total_price_display" class="currency-display" data-rwf="0"></div>
 
             </div>
         </div>

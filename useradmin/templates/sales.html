@@ -36,10 +36,10 @@
                     sales.forEach(sale => {
                         el += `<tr class="sale-row" data-id="${sale.id}">
                                     <td>${sale.id}</td>
-                                    <td class="customer-cell clickable-cell" data-id="${sale.customer.id}">${sale.customer.first_name} ${sale.customer.last_name}</td>
-                                    <td class="medicine-cell clickable-cell" data-id="${sale.medicine.id}">${sale.medicine.name}</td>
+                                    <td class="customer-cell clickable-cell" data-id="${sale.customer.id}">${sale.customer.first_name} ${sale.customer.last_name} <i class="fa fa-link"></i></td>
+                                    <td class="medicine-cell clickable-cell" data-id="${sale.medicine.id}">${sale.medicine.name} <i class="fa fa-link"></i></td>
                                     <td>${sale.quantity}</td>
-                                    <td>${formattedPrice(sale.total_price)}</td>
+                                    <td class="currency-display" data-rwf="${sale.total_price}">${formattedPrice(sale.total_price)}</td>
                                     <td>${sale.sale_date}</td>
                                     <td>
                                         <button class="btn btn-outline-danger delete-btn" data-id="${sale.id}">
@@ -163,18 +163,19 @@
                 const populateForm = (sale) => {
                     $('#id').val(sale.id);
                     $('#quantity').val(sale.quantity);
-                    $('#total_price').val(sale.total_price);
+                    $('#total_price_display').text(formattedPrice(sale.total_price));
                     $('#sale_date').val(sale.sale_date);
 
                     $('#customer').val(sale.customer.id);  
                     $('#customer option').filter(function() {
                         return $(this).val() == sale.customer.id;
                     }).text(sale.customer.name); 
-
+                    $('#total_price_display').text(formattedPrice(sale.total_price));  
+                    $('#total_price_display').data("rwf",sale.total_price);  
                     $('#product').val(sale.product.id);  
                     $('#product option').filter(function() {
                         return $(this).val() == sale.product.id;
-                    }).text(`${sale.product.name} - $${sale.product.price}`);  
+                    }).text(`${sale.product.name} - ${formattedPrice(sale.product.price)}`);  
                 };
 
                 // Fetch sales on page load
@@ -248,6 +249,7 @@
                     const totalPrice = (price * quantity).toFixed(2); 
                    
                     $('#total_price_display').text(formattedPrice(totalPrice));  
+                    $('#total_price_display').data("rwf", totalPrice);  
                 }
                 $('#savePrescription').on('click', function () {
                     const prescriptionForm = $('#prescriptionForm')[0];
@@ -268,7 +270,7 @@
                 });
 
                 $('#search-sales').on('input', function () {
-                    const searchTerm = $searchInput.val().toLowerCase();
+                    const searchTerm = $('#search-sales').val().toLowerCase();
                     $('#sales-table tbody').find('tr').each(function () {
                         const rowText = $(this).text().toLowerCase();
                         $(this).toggle(rowText.includes(searchTerm));

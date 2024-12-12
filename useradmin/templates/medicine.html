@@ -42,7 +42,7 @@
                                     <td>${medicine.strength}</td>
                                     <td>${medicine.batch_number}</td>
                                     <td>${medicine.quantity_in_stock}</td>
-                                    <td>${formattedPrice(medicine.price)}</td>
+                                    <td class="currency-display" data-rwf="${medicine.price}">${formattedPrice(medicine.price)}</td>
                                     <td><button class="btn btn-outline-danger delete-btn" data-id="${medicine.id}"><i class="fa fa-trash"></i></button></td>
                                 </tr>`
                     });

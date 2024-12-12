@@ -1,51 +1,63 @@
 {% extends "base.html" %}
 
 {% block content %}
+<!-- Login Form Container -->
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
       <div class="card shadow">
         <div class="card-header text-center">
-          <h3 class="mb-0">Login</h3>
+          <h3 class="mb-0"> </i> Login</h3>
         </div>
         <div class="card-body">
-          <form action="{% url 'login' %}" method="POST">
+          <form action="{% url 'login' %}?next={{next}}" method="POST">
             {% csrf_token %}
             
+            <!-- Email or Phone Input with Icon -->
             <div class="mb-3">
               <label for="identifier" class="form-label">Email or Phone Number</label>
-              <input
-                type="text"
-                id="identifier"
-                name="identifier"
-                class="form-control"
-                placeholder="Enter your email or phone number"
-                value="{{ request.POST.identifier }}"
-                required
-              />
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input
+                  type="text"
+                  id="identifier"
+                  name="identifier"
+                  class="form-control"
+                  placeholder="Enter your email or phone number"
+                  value="{{ request.POST.identifier }}"
+                  required
+                />
+              </div>
             </div>
 
+            <!-- Password Input with Icon -->
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                class="form-control"
-                placeholder="Enter your password"
-                value="{{ request.POST.password }}"
-                required
-              />
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  class="form-control"
+                  placeholder="Enter your password"
+                  value="{{ request.POST.password }}"
+                  required
+                />
+              </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-sign-in-alt"></i> Login</button>
           </form>
 
           <hr class="my-4">
 
           <div class="text-center">
-            <p>Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none">Create an account</a>.</p>
-            <p>Forgot your password? <a href="{% url 'reset_password' %}" class="text-decoration-none">Reset it</a>.</p>
+            <p>Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none"> Create an account</a>.</p>
+            <p>Forgot your password? <a href="{% url 'reset_password' %}" class="text-decoration-none">  Reset it</a>.</p>
+            <!-- Home Link -->
+            <p><a href="{% url 'index' %}" class="text-decoration-none"><i class="fas fa-home"></i> Go to Home</a></p>
           </div>
           
         </div>

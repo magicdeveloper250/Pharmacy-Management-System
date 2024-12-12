@@ -58,3 +58,71 @@
     justify-content: space-around;
     align-items: center;
 }
+tr{
+    cursor: pointer !important;
+}
+
+
+
+.currency-buttons {
+    position: fixed;
+    right: 10px;  
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1050; 
+  }
+  .currency-buttons *{
+    color:  rgba(0, 0, 0, 0.744) !important;
+  }
+
+  .currency-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 10px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  
+    cursor: pointer;
+    border: 2px solid #d19b3d; ;
+    
+  }
+
+  .currency-button .circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background-color: white;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-left: 10px;
+  }
+
+  .usd-button {
+    background-color: #3168a353;
+    color: white;
+  }
+
+  .rwf-button {
+    background-color: #3333335c;
+    color: white;
+  }
+
+  .currency-button:hover {
+    transform: scale(1.05);  
+    transition: transform 0.2s ease-in-out;
+  }
+  .usd-button:hover {
+    background-color: #3168a3;
+    color: white !important;
+  }
+
+  .rwf-button:hover {
+    background-color: #333333;
+    color: white !important;
+  }

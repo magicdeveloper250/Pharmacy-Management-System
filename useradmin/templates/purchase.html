@@ -36,10 +36,10 @@
                     purchases.forEach(purchase => {
                         el += `<tr class="purchase-row" data-id="${purchase.id}">
                                     <td>${purchase.id}</td>
-                                    <td class="supplier-cell clickable-cell" data-id="${purchase.supplier.id}">${purchase.supplier.contact_name}</td>
-                                    <td class="medicine-cell clickable-cell" data-id="${purchase.medicine.id}">${purchase.medicine.name}</td>
+                                    <td class="supplier-cell clickable-cell" data-id="${purchase.supplier.id}">${purchase.supplier.contact_name}  <i class="fa fa-link"></i></td>
+                                    <td class="medicine-cell clickable-cell" data-id="${purchase.medicine.id}">${purchase.medicine.name}   <i class="fa fa-link"></i></td>
                                     <td>${purchase.quantity}</td>
-                                    <td>${formattedPrice(purchase.total_price)}</td>
+                                    <td class="currency-display" data-rwf=${purchase.total_price}>${formattedPrice(purchase.total_price)}</td>
                                     <td>${purchase.purchase_date}</td>
                                     <td>
                                         <button class="btn btn-outline-danger delete-btn" data-id="${purchase.id}">
@@ -102,7 +102,7 @@
 
                 $('#id').val(purchase.id);
                 $('#quantity').val(purchase.quantity);
-                $('#total_price').val(purchase.total_price);
+                $('#total_price_display').text(formattedPrice(purchase.total_price));
                 $('#purchase_date').val(purchase.purchase_date);
 
                 $('#supplier').val(purchase.supplier.id);  
@@ -110,9 +110,11 @@
                     return $(this).val() == purchase.supplier.id;
                 }).text(purchase.supplier.contact_name); 
                 $('#medicine').val(purchase.medicine.id);  
+                $('#total_price_display').text(formattedPrice(purchase.total_price));  
+                $('#total_price_display').data("rwf",purchase.total_price);  
                 $('#medicine option').filter(function() {
                     return $(this).val() == purchase.medicine.id;
-                }).text(`${purchase.medicine.name} - $${purchase.medicine.price}`);  
+                }).text(`${purchase.medicine.name} - ${formattedPrice(purchase.medicine.price)}`);  
             };
 
                 $.get("{% url 'get_purchases' %}", function (response) {
@@ -248,7 +250,9 @@
                 function calculateTotalPrice() {
                     let quantity = parseInt($('#quantity').val()) || 0;
                     let price = parseFloat($('#medicine option:selected').data('price')) || 0;
-                    $('#total_price_display').text(formattedPrice((quantity * price).toFixed(2)))
+                    let total_price=quantity * price.toFixed(2)
+                    $('#total_price_display').text(formattedPrice(total_price))
+                    $('#total_price_display').data("rwf", total_price);  
                     
                 }
 

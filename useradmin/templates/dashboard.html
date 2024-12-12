@@ -48,11 +48,11 @@
                     <tbody>
                         <tr>
                             <td>Total Sales</td>
-                            <td><span class="text-success">$2656</span></td>
+                            <td><span class="text-success currency-display" data-rwf="{{sales}}" >{{sales}}</span></td>
                         </tr>
                         <tr>
                             <td>Total Purchases</td>
-                            <td><span class="text-danger">${{purchases}}</span></td>
+                            <td><span class="text-danger currency-display" data-rwf="{{purchases}}">{{purchases}}</span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -95,13 +95,13 @@
                 </div>
             </a>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 report-card-gen">
             <div class="card p-3 text-center">
                 <i class="fas fa-file-alt fa-2x mb-2"></i>
                 <h6>Sales Report</h6>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 report-card-gen" >
             <div class="card p-3 text-center">
                 <i class="fas fa-file-alt fa-2x mb-2"></i>
                 <h6>Purchase Report</h6>
@@ -109,4 +109,92 @@
         </div>
     </div>
 </div>
+
+
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Select Time Frame</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reportForm">
+                    <div class="mb-3">
+                        <label for="startDate" class="form-label">From:</label>
+                        <input type="date" class="form-control" id="startDate" name="start_date">
+                    </div>
+                    <div class="mb-3">
+                        <label for="endDate" class="form-label">To:</label>
+                        <input type="date" class="form-control" id="endDate" name="end_date">
+                    </div>
+                 
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-print"></i> Generate
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+ 
+<div class="modal fade" id="reportDetailsModal" tabindex="-1" aria-labelledby="reportDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportDetailsModalLabel">Report Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="reportData">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function() {
+    $(".report-card-gen").on("click", function() {
+       let reportType = $(this).find("h6").text().toLowerCase().includes('Sales') ? "sales" : "purchases";
+        $("#reportType").val(reportType);  
+        $("#reportModal").modal('show'); 
+    });
+
+    $("#reportForm").submit(function(event) {
+        event.preventDefault();  
+
+       let startDate = $("#startDate").val();
+       let endDate = $("#endDate").val();
+       let reportType = $("#reportType").val();
+        $.ajax({
+            url: "{% url 'medicine' %}",  
+            type: "GET",
+            data: {
+                start_date: startDate,
+                end_date: endDate,
+                report_type: reportType
+            },
+            success: function(response) {
+                if (response.success) {
+                   let reportHtml = "<h5>Report for " + reportType.charAt(0).toUpperCase() + reportType.slice(1) + "</h5>";
+                    reportHtml += "<pre>" + JSON.stringify(response.report_data, null, 2) + "</pre>"; 
+                    $("#reportData").html(reportHtml);  
+                    $("#reportDetailsModal").modal('show');  
+                } else {
+                    showToast("There was an error generating the report.", "danger");
+                }
+            },
+            error: function() {
+                showToast("There was an error processing your request.", "danger");
+            }
+        });
+
+        $("#reportModal").modal('hide');
+    });
+});
+
+</script>
 {% endblock %}

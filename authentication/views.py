@@ -67,22 +67,27 @@ def register_user(request):
 
 @login_not_required
 def login_user(request):
+    next_page = request.GET.get('next', 'admin_dash')   
+            
     if request.method == "POST":
         username = request.POST["identifier"]
         password = request.POST["password"]
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
-            messages.success(request, "User logged successfully")
-            return redirect("admin_dash")
+            messages.success(request, f"Welcome back, {user.username}!")
+            
+            return redirect(next_page)
         else:
             messages.error(request, "Username or password is incorrect")
-
-    return render(request, "login.html")
+    print(next_page)
+    return render(request, "login.html", context={"next":next_page})
 
 def logout_user(request):
+
+    messages.info(request, f"{request.user.username} logged out")
     logout(request)
-    return redirect('login')
+    return redirect('index')
     
 @login_not_required
 def reset_password_email(request):
