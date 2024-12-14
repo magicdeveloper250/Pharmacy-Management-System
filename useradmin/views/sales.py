@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from ..models import  Medicine, Customer, Sales, Prescription
+from ..models import  Medicine, Customer, Sales, Prescription, Cart, CartMedicines
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -16,33 +16,44 @@ def index(request):
 def add_sale(request):
     try:
         data = json.loads(request.body)
-        quantity = data.get('sale').get('quantity')
-        medicine = Medicine.objects.get(id=data.get('sale').get('medicine'))
-        customer = Customer.objects.get(id=data.get('sale').get("customer"))
+        customer_id= data.get("customer")
+        medicines= data.get("medicines")
+        
+        customer = Customer.objects.get(id=int(customer_id))
+        cart= Cart.objects.create(
+            customer= customer
+        )
         
 
-        if medicine.quantity_in_stock < int(quantity):
-            return JsonResponse({'status': 'error', 'message': 'Not enough stock available'}, status=400)
-        if medicine.is_prescription_required and data.get("perscription"):
-            perscription=Prescription.objects.create(
-            customer= customer,
-            medicine= medicine,
-            doctor_name= data.get("perscription").get("doctor_name"),
-            prescription_date=data.get("perscription").get("prescription_date"),
-            dosage=data.get("perscription").get("prescription_date"),
-            instructions=medicine.dosage_instructions
-        )
+        for med in medicines:
+            medicine= Medicine.objects.get(id=med.get("id"))
+            quantity = med.get('sale_quantity')
+            perscription=None
+            if medicine.quantity_in_stock < int(quantity):
+                return JsonResponse({'status': 'error', 'message': 'Not enough stock available'}, status=400)
+            if medicine.is_prescription_required and med.get("prescriptionData"):
+                perscription=Prescription.objects.create(
+                customer= customer,
+                medicine= medicine,
+                doctor_name= med.get("prescriptionData").get("doctor_name"),
+                prescription_date=med.get("prescriptionData").get("prescription_date"),
+                dosage=med.get("prescriptionData").get("dosage"),
+                instructions=med.get("prescriptionData").get("instructions"),
+            )
+            CartMedicines.objects.create(
+                        cart= cart,
+                        medicine=medicine,
+                        quantity= quantity,
+                        prescription= perscription
+                )
+            medicine.quantity_in_stock -= int(quantity)
+            medicine.save()
 
         Sales.objects.create(
-            medicine=medicine,
-            quantity=int(quantity),
-            customer=customer,
-            total_price=medicine.price * int(quantity),
-            prescription= perscription if medicine.is_prescription_required else None
+            customer=customer ,
+            cart= cart,
+            total_price=data.get("totalPrice"),
         )
-        medicine.quantity_in_stock -= int(quantity)
-        medicine.save()
-
         sales = list(Sales.objects.all())
         sales = [ sale.to_json() for sale in sales]
         return JsonResponse({'status': 'success', 'message': 'Sales added successfully!', 'sales': sales})
@@ -88,11 +99,6 @@ def delete_sale(request):
         data = json.loads(request.body)
         sale_id = data.get('id')
         sale = Sales.objects.get(id=sale_id)
-
-        medicine = sale.medicine
-        medicine.quantity_in_stock += sale.quantity
-        medicine.save()
-
         sale.delete()
 
         sales = list(Sales.objects.all())
@@ -101,6 +107,7 @@ def delete_sale(request):
     except Sales.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Sales not found.'}, status=404)
     except Exception as e:
+        print(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 def get_sales(request):
@@ -121,3 +128,30 @@ def get_sale(request):
         return JsonResponse(data)
     except Sales.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Sales not found'})
+
+
+def get_cart(request):
+    cart_id = request.GET.get('id')
+    try:
+        cart = Cart.objects.get(id=cart_id)
+        cart_medicines= CartMedicines.objects.filter(cart= cart)
+        data = {
+            'status': 'success',
+            'medicines': [medicine.to_json() for medicine in cart_medicines]
+        }
+        return JsonResponse(data)
+    except Sales.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'cart not found'})
+    
+
+def get_perscription(request):
+    perscription_id = request.GET.get('id')
+    try:
+        perscription = Prescription.objects.get(id=perscription_id)
+        data = {
+            'status': 'success',
+            'perscription':  perscription.to_json()
+        }
+        return JsonResponse(data)
+    except Sales.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'perscription not found'})

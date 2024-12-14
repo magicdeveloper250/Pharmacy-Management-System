@@ -15,62 +15,104 @@
 
             <div class="col-md-6 mb-3">
                 <label for="medicine" class="form-label">Medicine</label>
-                <select class="form-control" id="medicine" name="medicine" required>
+                <select class="form-control" id="medicine" name="medicine" required multiple multiselect-search="true">
                     {% for medicine in medicines %}
-                        <option value="{{ medicine.id }}" data-prescription="{{ medicine.is_prescription_required|yesno:'true,false' }}" data-price="{{ medicine.price }}">
-                            {{ medicine.name }} - RWF{{ medicine.price }}
+                        <option value="{{medicine.to_json2}}" data-prescription="{{ medicine.is_prescription_required|yesno:'true,false' }}" data-price="{{ medicine.price }}" data-id="{{ medicine.id }}">
+                            {{ medicine.name }} - RWF {{ medicine.price }}
                         </option>
                     {% endfor %}
                 </select>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label for="quantity" class="form-label">Quantity</label>
+            <!-- <div class="col-md-6 mb-3">
+                <label for="quantity" class="form-label">Quantity</label> <br>
                 <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
-            </div>
+            </div> -->
 
             <div class="col-md-6 mb-3">
                 <label for="total_price" class="form-label">Total Price</label>
                 <div id="total_price_display" class="currency-display" data-rwf="0"></div>
 
             </div>
+          
         </div>
+        
+      
     </form>
+   
 </div>
-
-<!-- Modal for Prescription Details -->
+  
+<!-- Modal -->
 <div class="modal fade" id="prescriptionModal" tabindex="-1" aria-labelledby="prescriptionModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
+            <form id="prescriptionForm">
             <div class="modal-header">
-                <h5 class="modal-title" id="prescriptionModalLabel">Prescription Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="prescriptionForm">
-                    <div class="mb-3">
-                        <label for="doctor_name" class="form-label">Doctor's Name</label>
-                        <input type="text" class="form-control" id="doctor_name" name="doctor_name" required>
+                    <h5 class="modal-title" id="prescriptionModalLabel">Medicine Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                        <div id="prescriptionFields" style="display: none;">
+                            <div class="mb-3">
+                                <label for="doctor_name" class="form-label">Doctor's Name</label>
+                                <input type="text" class="form-control" id="doctor_name" name="doctor_name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="prescription_date" class="form-label">Prescription Date</label>
+                                <input type="text" class="form-control" id="prescription_date" name="prescription_date">
+                            </div>
+                            <div class="mb-3">
+                                <label for="dosage" class="form-label">Dosage</label>
+                                <input type="text" class="form-control" id="dosage" name="dosage">
+                            </div>
+                            <div class="mb-3">
+                                <label for="instructions" class="form-label">Instructions</label>
+                                <textarea class="form-control" id="instructions" name="instructions"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sale-quantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="sale-quantity" name="quantity" min="1" required>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="prescription_date" class="form-label">Prescription Date</label>
-                        <input type="date" class="form-control" id="prescription_date" name="prescription_date" required>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="savePrescription"><i class="fa fa-save"></i> Save</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="dosage" class="form-label">Dosage</label>
-                        <input type="text" class="form-control" id="dosage" name="dosage" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="instructions" class="form-label">Instructions</label>
-                        <textarea class="form-control" id="instructions" name="instructions" required></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="savePrescription">Save Prescription</button>
-            </div>
+            </form>
         </div>
     </div>
 </div>
 
+
+
+<!-- Selected Medicines Modal -->
+<div class="modal fade" id="selectedMedicinesModal" tabindex="-1" aria-labelledby="selectedMedicinesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="selectedMedicinesModalLabel">Medicines Cart</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateQuantitiesForm">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Medicine Name</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="selectedMedicinesTable">
+                            <!-- Rows will be dynamically added -->
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="updateQuantitiesForm" class="btn btn-primary"><i class="fa fa-pen"></i> update</button>
+            </div>
+        </div>
+    </div>
+</div>

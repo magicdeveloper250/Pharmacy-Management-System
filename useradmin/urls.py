@@ -33,5 +33,7 @@ urlpatterns = [
     path('delete_sales/', sales.delete_sale, name='delete_sale'),
     path('get_sales/', sales.get_sales, name='get_sales'),
     path('get_sale/', sales.get_sale, name='get_sale'),
+    path('get_cart/', sales.get_cart, name='get_cart'),
+    path('get_perscription/', sales.get_perscription, name='get_perscription'),
 
 ]

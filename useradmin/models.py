@@ -1,4 +1,6 @@
 from django.db import models
+import json
+from datetime import date
  
 class Medicine(models.Model):
     name = models.CharField(max_length=255)
@@ -25,7 +27,7 @@ class Medicine(models.Model):
                 'name': self.name,
                 'formulation': self.formulation,
                 'strength': self.strength,
-                'expiration_date': self.expiration_date,
+                'expiration_date': str(date(2024, 12, 26)),
                 'batch_number': self.batch_number,
                 'storage_conditions': self.storage_conditions,
                 'manufacturer': self.manufacturer,
@@ -38,6 +40,25 @@ class Medicine(models.Model):
                 'quantity_in_stock': self.quantity_in_stock,
                 'price': self.price,
                 'is_prescription_required': self.is_prescription_required,}
+    
+    def to_json2(self):
+        return json.dumps({'id': self.id,
+                'name': self.name,
+                'formulation': self.formulation,
+                'strength': self.strength,
+                'expiration_date': str(date(2024, 12, 26)),
+                'batch_number': self.batch_number,
+                'storage_conditions': self.storage_conditions,
+                'manufacturer': self.manufacturer,
+                'active_ingredients': self.active_ingredients,
+                'shelf_life': self.shelf_life,
+                'route_of_administration': self.route_of_administration,
+                'dosage_instructions': self.dosage_instructions,
+                'side_effects': self.side_effects,
+                'packaging_type': self.packaging_type,
+                'quantity_in_stock': self.quantity_in_stock,
+                'price': float(self.price),
+                'is_prescription_required': self.is_prescription_required,})
 
 
 class Supplier(models.Model):
@@ -102,6 +123,15 @@ class Prescription(models.Model):
     
     def __str__(self):
         return f"Prescription for {self.consumer} on {self.prescription_date}"
+    def to_json(self):
+        return {
+            "customer":self.customer.to_json(),
+            "doctor_name":self.doctor_name,
+            "prescription_date":self.prescription_date,
+            "medicine":self.medicine.to_json(),
+            "dosage":self.dosage,
+            "instructions":self.instructions
+        }
 
 
 
@@ -120,36 +150,52 @@ class Purchase(models.Model):
         super().save(*args, **kwargs)
 
 
+class Cart(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    def __str__(self):
+        return f"{self.customer}"
+    
+class CartMedicines(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    medicine=models.ForeignKey(Medicine, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    prescription = models.ForeignKey(Prescription, on_delete=models.SET_NULL, null=True, blank=True)
+    def __str__(self):
+        return f"{self.customer}"
+    
+    def to_json(self):
+        return {
+            "medicine":self.medicine.to_json(),
+            "quantity":self.quantity,
+            "perscription":self.prescription.id if self.prescription !=None else None
+        }
+
 class Sales(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True, blank=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
     sale_date =  models.DateField(auto_now_add=True)
-    prescription = models.ForeignKey(Prescription, on_delete=models.SET_NULL, null=True, blank=True)
     payment_method = models.CharField(max_length=50, choices=[
         ('CASH', 'Cash'),
         ('CARD', 'Card'),
         ('ONLINE', 'Online Payment'),
     ], default='CASH')
+    
 
     def __str__(self):
         return f"Sale to {self.customer} on {self.sale_date}"
-
-    def save(self, *args, **kwargs):
-        self.total_price = self.quantity * self.medicine.price
-        if self.medicine.quantity_in_stock < self.quantity:
-            raise ValueError("Not enough stock for the requested sale.")
-        super().save(*args, **kwargs)
 
     def to_json(self):
         return {
             'id': self.id,
             'customer': self.customer.to_json(),
-            'medicine': self.medicine.to_json(),
-            'quantity': self.quantity,
+            'cart': self.cart.id,
             'total_price': self.total_price,
             'sale_date': self.sale_date,
-            'prescription': self.prescription.id if self.prescription else None,
             'payment_method': self.payment_method,
         }
+    
+
+
+
+    

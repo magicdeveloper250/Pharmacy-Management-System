@@ -7,7 +7,15 @@
                 <h3><i class="fa fa-shopping-cart fa-lg"></i> Sales Management</h3>
             </div>
             <div class="text-right">
-                <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
+                <button class="btn btn-outline-secondary position-relative mr-3" id="cart-btn">
+                    <i class="fa-solid fa-cart-shopping" style="font-size: 24px; color: #ff5722;"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-counter">
+                        3
+                        <span class="visually-hidden">products in cart</span>
+                    </span>
+                </button>
+
+                <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa-solid fa-cash-register" style="font-size: 24px; margin-right: 8px;"></i> Checkout</button>
                 <a href="{% url 'admin_dash' %}" class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
             </div>
         </div>
@@ -23,6 +31,7 @@
                 const $resizer = $('#resizer');
                 const $tableContainer = $('#sales-table-container');
                 let isResizing = false;
+                let selectedMedicines=[]
 
                 $("#dialog").dialog({
                     autoOpen: false,
@@ -37,10 +46,10 @@
                         el += `<tr class="sale-row" data-id="${sale.id}">
                                     <td>${sale.id}</td>
                                     <td class="customer-cell clickable-cell" data-id="${sale.customer.id}">${sale.customer.first_name} ${sale.customer.last_name} <i class="fa fa-link"></i></td>
-                                    <td class="medicine-cell clickable-cell" data-id="${sale.medicine.id}">${sale.medicine.name} <i class="fa fa-link"></i></td>
-                                    <td>${sale.quantity}</td>
-                                    <td class="currency-display" data-rwf="${sale.total_price}">${formattedPrice(sale.total_price)}</td>
+                                    <td class="cart-cell clickable-cell" data-id="${sale.cart}">${sale.cart} <i class="fa fa-link"></i></td>
                                     <td>${sale.sale_date}</td>
+                                    <td>${sale.payment_method}</td>
+                                    <td class="currency-display" data-rwf="${sale.total_price}">${formattedPrice(sale.total_price)}</td>
                                     <td>
                                         <button class="btn btn-outline-danger delete-btn" data-id="${sale.id}">
                                             <i class="fa fa-trash"></i>
@@ -72,6 +81,14 @@
                     }).fail(() => showToast('Failed to load medicine details.', "danger"));
                 });
 
+                $(document).on('click', '.perscription-cell', function(){
+                    const medicineId = $(this).data('id');
+                    const medicine = selectedMedicines.find(med => med.id === medicineId);
+                    $("#sale-quantity").data("id", medicine.id);
+                    showCartMedicineMetaModal(medicine.id, medicine.is_prescription_required, medicine)
+                    $("#selectedMedicinesModal").modal("hide");
+                })
+
                 $(document).on('click', '.customer-cell', function () {
                     const supplierId = $(this).data('id');
 
@@ -93,16 +110,18 @@
                     }).fail(() => showToast('Failed to load supplier details.', "danger"));
                 });
 
-                    $(".sale-row").on('click', function () {
-                        const saleId = $(this).data('id');
-                        $.get("{% url 'get_sale' %}", { id: saleId }, function (response) {
-                            if (response.status === 'success') {
-                                populateForm(response.sale);
-                            } else {
-                                showToast('Failed to load sale details.', "danger");
-                            }
-                        }).fail(() => showToast('Failed to load sale details.', "danger"));
-                    });
+            
+
+                    // $(".sale-row").on('click', function () {
+                    //     const saleId = $(this).data('id');
+                    //     $.get("{% url 'get_sale' %}", { id: saleId }, function (response) {
+                    //         if (response.status === 'success') {
+                    //             populateForm(response.sale);
+                    //         } else {
+                    //             showToast('Failed to load sale details.', "danger");
+                    //         }
+                    //     }).fail(() => showToast('Failed to load sale details.', "danger"));
+                    // });
 
                     $(".delete-btn").on('click', function (event) {
                         event.stopPropagation();
@@ -141,6 +160,90 @@
                     });
                 };
 
+
+                $(document).on('click', '.cart-cell', function () {
+                    const cartId = $(this).data('id');
+
+                    $.get("{% url 'get_cart' %}", { id: cartId }, function (response) {
+                        if (response.status === 'success') {
+                            populateCartModal (response.medicines);
+                        } else {
+                            showToast('Failed to load cart details.', "danger");
+                        }
+                    }).fail(() => showToast('Failed to load cart details.', "danger"));
+                });
+
+
+                $(document).on('click', '.cart-perscription-cell', function () {
+                    const perscriptionId = $(this).data('id');
+
+                    $.get("{% url 'get_perscription' %}", { id: perscriptionId }, function (response) {
+                        if (response.status === 'success') {
+                            populatePerscriptionModal (response.perscription);
+                        } else {
+                            showToast('Failed to load cart details.', "danger");
+                        }
+                    }).fail(() => showToast('Failed to load cart details.', "danger"));
+                });
+
+                
+                function populatePerscriptionModal(data) {
+                    $('#detailsModalLabel').text("Perscription Details")
+                    let bodyRow = '';
+                    let headerRow = '<tr>';
+                    headerRow += `<th>#</th>`;
+                    headerRow += `<th>Customer</th>`;
+                    headerRow += `<th>Doctor Name</th>`;
+                    headerRow += `<th>Perscription Date</th>`;
+                    headerRow += `<th>Medecine</th>`;
+                    headerRow += `<th>Dosage</th>`;
+                    headerRow += `<th>Instructions</th>`;
+                    headerRow += '</tr>';
+                    bodyRow += '<tr>';
+                        bodyRow += `<td>1</td>`;
+                        bodyRow += `<td class="customer-cell clickable-cell" data-id="${data.customer.id}">${data.customer.first_name +' '+data.customer.last_name} <i class="fa fa-link"></i></td>`;
+                        bodyRow += `<td>${data.doctor_name}</td>`;
+                        bodyRow += `<td>${data.prescription_date}</td>`;
+                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${data.medicine.id}">${data.medicine.name || 'N/A'} <i class="fa fa-link"></i></td>`;
+                        bodyRow += `<td>${data.dosage|| 'N/A'}</td>`;
+                        bodyRow += `<td>${data.instructions|| 'N/A'}</td>`;
+                        bodyRow += '</tr>';
+                    $('#modalTableHeader').html(headerRow);
+                    $('#modalTableBody').html(bodyRow);
+
+                    $('#detailsModal').modal('show');
+                }
+
+
+                function populateCartModal(data) {
+                    $('#detailsModalLabel').text("Cart Details")
+                    let bodyRow = '';
+                    let headerRow = '<tr>';
+                    headerRow += `<th>#</th>`;
+                    headerRow += `<th>Med. Name</th>`;
+                    headerRow += `<th>Med. Quantity</th>`;
+                    headerRow += `<th>Med. perscription</th>`;
+                    headerRow += '</tr>';
+
+                    data.forEach((d, index) => {
+                        bodyRow += '<tr>';
+                        bodyRow += `<td>${index+1}</td>`;
+                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${d.medicine.id}">${d.medicine.name || 'N/A'} <i class="fa fa-link"></i></td>`;
+                        bodyRow += `<td>${d.quantity || 'N/A'}</td>`;
+                        if(d.perscription)
+                            bodyRow += `<td class="cart-perscription-cell clickable-cell" data-id="${d.perscription}">${d.perscription || 'N/A'} <i class="fa fa-link"></i></td>`;
+                        bodyRow += '</tr>';
+                    });
+
+                   
+
+
+                    $('#modalTableHeader').html(headerRow);
+                    $('#modalTableBody').html(bodyRow);
+
+                    $('#detailsModal').modal('show');
+                }
+
                 function populateModal(title, data, fields) {
                     $('#detailsModalLabel').text(title);
 
@@ -160,6 +263,9 @@
 
                     $('#detailsModal').modal('show');
                 }
+
+
+
                 const populateForm = (sale) => {
                     $('#id').val(sale.id);
                     $('#quantity').val(sale.quantity);
@@ -197,60 +303,246 @@
                         showToast('Please fill in all fields before submitting.', "danger");
                         return;
                     }
+                    
+                    if(selectedMedicines.length<1){
+                        showToast('Your cart is currently empty.', "danger");
+                        return;
+                    }
 
+                    
+                    $("#dialog").dialog("option", "title", "Confirm transaction.");
+                        $("#dialog").html(`<p>Are sure you want to save this transaction?</p>`);
+
+                        $("#dialog").dialog("option", "buttons", {
+                            Yes: function () {
+                                $(this).dialog("close");
+                                const customer= $("#customer").val();
+                                let formData = {customer:customer, medicines: selectedMedicines, totalPrice: updateTotalPrice()};
+                                const saleId = $('#id').val();
+                                let ajaxOptions = {
+                                    url: saleId ? "{% url 'update_sale' %}" : "{% url 'add_sale' %}",
+                                    type: saleId ? 'PUT' : 'POST',
+                                    data: JSON.stringify(formData),
+                                    processData: false,
+                                    contentType: false,
+                                    success: function (response) {
+                                        if (response.status === 'success') {
+                                            showToast(response.message, "success");
+                                            $('#id').val("");
+                                            $("#salesForm")[0].reset();
+                                            const jsonSales = saleId ? response.sales : response.sales.reverse();
+                                            renderSales(jsonSales);
+                                            selectedMedicines=[];
+                                            updateTotalPrice()
+                                        } else {
+                                            showToast(response.message, "danger");
+                                        }
+                                    },
+                                    error: function (xhr, status, error) {
+                                        showToast('An error occurred: ' + error, "danger");
+                                    }
+                                };
+
+                                $.ajax(ajaxOptions);
+                            },
+                            No: function () {
+                                $(this).dialog("close");
+                            },
+                        });
+                        $("#dialog").dialog("open");
+                    
+                });
+
+
+                $("#prescriptionForm").on("submit", (event)=>{
+                    event.preventDefault()
+                    const currentMedicineId= $("#sale-quantity").data("id");
                     let formData = {};
-                    $('#salesForm').find('input, select').each(function () {
+                    $('#prescriptionFields').find('input, textarea').each(function () {
                         formData[$(this).attr('name')] = $(this).val();
                     });
-                    let prescriptionData= {};
-                    $('#prescriptionForm').find('input, select').each(function () {
-                        prescriptionData[$(this).attr('name')] = $(this).val();
-                    });
-                    const saleId = $('#id').val();
-                    let ajaxOptions = {
-                        url: saleId ? "{% url 'update_sale' %}" : "{% url 'add_sale' %}",
-                        type: saleId ? 'PUT' : 'POST',
-                        data: JSON.stringify({"sale":formData, "perscription":prescriptionData}),
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            if (response.status === 'success') {
-                                showToast(response.message, "success");
-                                $('#id').val("");
-                                $("#salesForm")[0].reset();
-                                const jsonSales = saleId ? response.sales : response.sales.reverse();
-                                renderSales(jsonSales);
-                            } else {
-                                showToast(response.message, "danger");
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            showToast('An error occurred: ' + error, "danger");
+                    console.log(formData);
+                    selectedMedicines = selectedMedicines.map((med) => {
+                        if (med.id == currentMedicineId) {
+                            return { ...med, prescriptionData: formData };
                         }
-                    };
+                        return med;  
+                    });
+                    document.getElementById("prescriptionForm").reset();
+                    $('#prescriptionModal').modal('hide');
+                    $("#prescriptionModalLabel").text('Medicine Details')
 
-                    $.ajax(ajaxOptions);
-                });
+                })
+
+
 
 
                 $('#medicine').on('change', function () {
-                    const selectedOption = $(this).find('option:selected');
-                    const isPrescriptionRequired = selectedOption.data('prescription') === true;
+                    const selectValues = [];
+                    $(this).val().forEach(item => {
+                        selectValues.push(JSON.parse(item));
+                    });
 
-                    if (isPrescriptionRequired) {
-                        $('#prescriptionModal').modal('show');
+                    const updatedMedicines = selectValues.map(item => {
+                        let existingItem = selectedMedicines.find(med => med.id === item.id);
+                        if (existingItem) {
+                            return existingItem;  
+                        } else {
+                            const newItem = { ...item, sale_quantity: 0 }; 
+                            return newItem;
+                        }
+                    });
+
+                    selectedMedicines = updatedMedicines; 
+
+                    const medicineData = updatedMedicines.find(med => med.sale_quantity === 0);  
+                    if (medicineData) {
+                        $("#sale-quantity").data("id", medicineData.id);
+                        showMedicineMetaModal(medicineData.id, medicineData.is_prescription_required);
+                    }else{
+                        $("#sale-quantity").data("id", "");
+                        $("#sale-quantity").val("id", "");
+
+
                     }
+                    updateTotalPrice()
                 });
 
-                function updateTotalPrice() {
-                    const selectedOption = $('#medicine').find('option:selected');
-                    const price = parseFloat(selectedOption.data('price')) || 0;
-                    const quantity = parseInt($('#quantity').val()) || 0;  
-                    const totalPrice = (price * quantity).toFixed(2); 
-                   
-                    $('#total_price_display').text(formattedPrice(totalPrice));  
-                    $('#total_price_display').data("rwf", totalPrice);  
+                $("#cart-btn").on("click", ()=>{
+                    const $tableBody = $("#selectedMedicinesTable");
+                    $tableBody.empty();  
+                    selectedMedicines.forEach((medicine, index) => {
+                        $tableBody.append(`
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td class="medicine-cell clickable-cell" data-id="${medicine.id}">${medicine.name} <i class="fa fa-link"></i></td>
+                                <td>
+                                    <input type="number" name="quantity" class="form-control" 
+                                        value="${medicine.sale_quantity}" min="1" 
+                                        data-id="${medicine.id}">
+                                </td> 
+                                ${medicine.is_prescription_required&& `<td class="perscription-cell clickable-cell" data-id="${medicine.id}">Perscription <i class="fa fa-pen"></i></td>`}
+                            </tr>
+                        `);
+                    });
+
+                    $("#selectedMedicinesModal").modal("show");
+
+
+                })
+
+                $("#updateQuantitiesForm").on("submit", function (event) {
+                    event.preventDefault();
+
+                    $("#selectedMedicinesTable")
+                        .find("input[name='quantity']")
+                        .each(function () {
+                            const medId = $(this).data("id");
+                            const newQuantity = $(this).val();
+                            selectedMedicines = selectedMedicines.map((med) =>{
+                                if (med.id === medId){
+                                    if (newQuantity > med.quantity_in_stock) {
+                                        showToast('Quantity exceeds stock availability. ('+med.name+')', 'danger');
+                                        return med; 
+                                    }else{
+                                        return { ...med, sale_quantity: newQuantity } 
+                                    }
+                                }
+                                return med
+                            }
+                            );
+                        });
+
+                    $("#selectedMedicinesModal").modal("hide");
+                    updateTotalPrice()
+                });
+
+
+
+                function showMedicineMetaModal(medId, isPrescriptionRequired){
+                   $('#prescriptionModal').modal('show');
+                   if (isPrescriptionRequired) {
+                    $('#prescriptionFields').show();
+                    } else {
+                        $('#prescriptionFields').hide();
+                    }
                 }
+
+
+                function showCartMedicineMetaModal(medId, isPrescriptionRequired, currentMedicine){
+                   $('#prescriptionModal').modal('show');
+                   if (isPrescriptionRequired) {
+                    $('#prescriptionFields').show();
+                    } else {
+                        $('#prescriptionFields').hide();
+                    }
+                    populatePerscriptionForm(currentMedicine);
+
+                }
+
+
+                const populatePerscriptionForm = (medicine) => {
+                    $("#prescriptionModalLabel").text(`Updated medicine details (${medicine.name}).`)
+                    $('#doctor_name').val(medicine.prescriptionData.doctor_name);
+                    $('#prescription_date').val(medicine.prescriptionData.prescription_date);
+                    $('#dosage').val(medicine.prescriptionData.dosage);
+                    $('#instructions').val(medicine.prescriptionData.instructions);
+                    $('#sale-quantity').val(medicine.sale_quantity);  
+                      
+                };
+
+
+                $('#sale-quantity').on('input', function () {
+                    const medId = $(this).data('id');
+                    const newQuantity = parseInt($(this).val(), 10);
+                    const medicine = selectedMedicines.find(item => item.id === medId);
+
+                    if (medicine && newQuantity > medicine.quantity_in_stock) {
+                        showToast('Quantity exceeds stock availability.', 'danger');
+                        $(this).val(medicine.quantity_in_stock);
+                        return;
+                    }
+
+                    selectedMedicines = selectedMedicines.map(item => {
+                        if (item.id === medId) {
+                            item.sale_quantity = newQuantity || 0;
+                        }
+                        return item;
+                    });
+
+                    updateTotalPrice();
+                });
+
+
+                function updateMedicineOptionText(item){
+                    const lastSelected = $("#medicine").find(`option[data-id='${item.id}']`);
+                    const formattedText=`<div class="container">
+                                            <div class="row border-bottom py-2">
+                                                <div class="col-6"><strong>${item.name}</strong></div>
+                                                <div class="col-2">${item.sale_quantity} units</div>
+                                                <div class="col-2">${formattedPrice(item.price)}</div>
+                                                <div class="col-2 text-end">
+                                                <span>${formattedPrice(item.price * item.sale_quantity)}</span>
+                                                </div>
+                                            </div>
+                                        </div>`
+                    lastSelected.data("html", formattedText);
+                }
+
+                function updateTotalPrice(callback=null) {
+                    let totalPrice =0
+                    selectedMedicines.forEach((item, index) => {
+                        totalPrice +=(item.sale_quantity * item.price);
+                        updateMedicineOptionText(item)
+                    });
+                    $('#total_price_display').text(formattedPrice(totalPrice));
+                    $('#total_price_display').data("rwf", totalPrice);
+                    $("#cart-counter").text(selectedMedicines.length)
+                    return totalPrice;
+                }
+
+
+
                 $('#savePrescription').on('click', function () {
                     const prescriptionForm = $('#prescriptionForm')[0];
                     if (prescriptionForm.checkValidity()) {
@@ -261,13 +553,6 @@
                 });
 
                             
-                $('#medicine').on('change', function () {
-                    updateTotalPrice();
-                });
-
-                $('#quantity').on('input', function () {
-                    updateTotalPrice();
-                });
 
                 $('#search-sales').on('input', function () {
                     const searchTerm = $('#search-sales').val().toLowerCase();
@@ -294,19 +579,46 @@
                     return isValid;
                 }
 
-                function calculateTotalPrice() {
-                    let quantity = parseInt($('#quantity').val()) || 0;
-                    let price = parseFloat($('#product option:selected').data('price')) || 0;
-                    $('#total_price').val((quantity * price).toFixed(2));
-                }
+               
+                $( "#prescription_date" ).datepicker({
+                    dateFormat: "yy-mm-dd"  
+                });
+                $("#cart-counter").text(selectedMedicines.length)
 
-                $('#quantity').on('input', calculateTotalPrice);
-                $('#product').on('change', calculateTotalPrice);
+                    $('#prescriptionModal').modal({
+                    backdrop: 'static',
+                    keyboard: false
+                })
+                $('#prescriptionModal').on('click', '.modal-backdrop', function(e){
+                e.preventDefault();
+                });
+
+                $(document).on('keydown', function(e){
+                    if (e.key === "Escape") {
+                        e.preventDefault();
+                    }
+                });
+            
+
+                $('#prescriptionModal .btn-close').prop('disabled', true);  
+
+                window.addEventListener("beforeunload", function (event) {
+                    if (selectedMedicines.length>0) {
+                        event.preventDefault();
+                        event.returnValue = "You have unsaved changes. Are you sure you want to leave?";
+                    }
+            });
+                
             });
 
             function submitForm() {
                 $('#salesForm').submit();
             }
+
+
+            
+           
         </script>
+        <script src="{%static 'plugins/multiselect-dropdown.js'%}"></script>
     </div>
 {% endblock %}

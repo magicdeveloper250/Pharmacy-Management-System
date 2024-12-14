@@ -263,6 +263,17 @@
             function submitForm() {
                 $('#purchaseForm').submit();
             }
+
+            $("#quantity").spinner({
+                numberFormat: "n", 
+                min: 0  
+            });
+
+            $("#quantity").on("input", function () {
+                if ($(this).val() < 0) {
+                    $(this).val(0);
+                }
+            });
         </script>
     </div>
 {% endblock %}

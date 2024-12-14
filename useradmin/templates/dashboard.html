@@ -122,11 +122,11 @@
                 <form id="reportForm">
                     <div class="mb-3">
                         <label for="startDate" class="form-label">From:</label>
-                        <input type="date" class="form-control" id="startDate" name="start_date">
+                        <input type="text" class="form-control" id="startDate" name="start_date">
                     </div>
                     <div class="mb-3">
                         <label for="endDate" class="form-label">To:</label>
-                        <input type="date" class="form-control" id="endDate" name="end_date">
+                        <input type="text" class="form-control" id="endDate" name="end_date">
                     </div>
                  
                     <button type="submit" class="btn btn-primary">
@@ -194,6 +194,15 @@
 
         $("#reportModal").modal('hide');
     });
+
+    $( function() {
+        $( "#startDate" ).datepicker({
+            dateFormat: "yy-mm-dd"  
+        });
+        $( "#endDate" ).datepicker({
+            dateFormat: "yy-mm-dd"  
+        });
+    } );
 });
 
 </script>

@@ -184,6 +184,10 @@
             function submitForm() {
                 $('#customerForm').submit();
             }
+
+            $( "#date_of_birth" ).datepicker({
+            dateFormat: "yy-mm-dd"  
+            });
         </script>
     </div>
 {% endblock %}
