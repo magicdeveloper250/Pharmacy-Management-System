@@ -159,5 +159,9 @@ PROFILE_IMAGE_SIZE = 2 * 1024 * 1024
 RESET_TOKEN_TIMEOUT=60
 
 LOGIN_URL = 'login'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
