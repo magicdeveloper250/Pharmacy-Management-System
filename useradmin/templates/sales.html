@@ -204,13 +204,13 @@
                     headerRow += `<th>Instructions</th>`;
                     headerRow += '</tr>';
                     bodyRow += '<tr>';
-                        bodyRow += `<td>1</td>`;
-                        bodyRow += `<td class="customer-cell clickable-cell" data-id="${data.customer.id}">${data.customer.first_name +' '+data.customer.last_name} <i class="fas fa-external-link-alt"></i></td>`;
-                        bodyRow += `<td>${data.doctor_name}</td>`;
-                        bodyRow += `<td>${data.prescription_date}</td>`;
-                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${data.medicine.id}">${data.medicine.name || 'N/A'} <i class="fas fa-external-link-alt"></i></td>`;
-                        bodyRow += `<td>${data.dosage|| 'N/A'}</td>`;
-                        bodyRow += `<td>${data.instructions|| 'N/A'}</td>`;
+                        bodyRow += `<td><b>#</b>1</td>`;
+                        bodyRow += `<td class="customer-cell clickable-cell" data-id="${data.customer.id}"><b>Customer</b>${data.customer.first_name +' '+data.customer.last_name} <i class="fas fa-external-link-alt"></i></td>`;
+                        bodyRow += `<td><b>Doctor Name</b>${data.doctor_name}</td>`;
+                        bodyRow += `<td><b>Perscription Date</b>${data.prescription_date}</td>`;
+                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${data.medicine.id}"><b>Medecine</b>${data.medicine.name || 'N/A'} <i class="fas fa-external-link-alt"></i></td>`;
+                        bodyRow += `<td><b>Dosage</b>${data.dosage|| 'N/A'}</td>`;
+                        bodyRow += `<td><b>Instructions</b>${data.instructions|| 'N/A'}</td>`;
                         bodyRow += '</tr>';
                     $('#modalTableHeader').html(headerRow);
                     $('#modalTableBody').html(bodyRow);
@@ -231,11 +231,11 @@
 
                     data.forEach((d, index) => {
                         bodyRow += '<tr>';
-                        bodyRow += `<td>${index+1}</td>`;
-                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${d.medicine.id}">${d.medicine.name || 'N/A'} <i class="fas fa-external-link-alt"></i></td>`;
-                        bodyRow += `<td>${d.quantity || 'N/A'}</td>`;
+                        bodyRow += `<td><b>#</b>${index+1}</td>`;
+                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${d.medicine.id}"><b>Med. Name</b>${d.medicine.name || 'N/A'} <i class="fas fa-external-link-alt"></i></td>`;
+                        bodyRow += `<td><b>Med. Quantity</b>${d.quantity || 'N/A'}</td>`;
                         if(d.perscription)
-                            bodyRow += `<td class="cart-perscription-cell clickable-cell" data-id="${d.perscription}">${d.perscription || 'N/A'} <i class="fas fa-external-link-alt"></i></td>`;
+                            bodyRow += `<td class="cart-perscription-cell clickable-cell" data-id="${d.perscription}"><b>Med. perscription</b>${d.perscription || 'N/A'} <i class="fas fa-external-link-alt"></i></td>`;
                         bodyRow += '</tr>';
                     });
 
@@ -256,7 +256,7 @@
 
                     fields.forEach(field => {
                         headerRow += `<th>${field.label}</th>`;
-                        bodyRow += `<td>${data[field.key] || 'N/A'}</td>`;
+                        bodyRow += `<td><b>${field.label}</b>${data[field.key] || 'N/A'}</td>`;
                     });
 
                     headerRow += '</tr>';

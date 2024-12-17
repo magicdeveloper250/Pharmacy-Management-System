@@ -91,9 +91,10 @@ tbody tr b{
     display: none;
 }
 
-.table thead td{
-    border:none;
-}
+thead th {
+    border: none !important;
+    background-color: rgba(138, 137, 137, 0.705) !important;
+  }
 
 #table-search{
     display: inline-flex;
@@ -107,12 +108,13 @@ tbody tr b{
     tr {
       
         display: flex;
-        flex-direction: column;
-        margin-bottom: 1em;
-        border-radius: 20px;
-        
-         
-        
+      flex-direction: column;
+      margin-bottom: 1em;
+      border-radius: 20px;
+      background-color: #f8f9fa;  
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  
+      padding: 1em;  
+      border: 1px solid #ddd;
     }
 
     td {

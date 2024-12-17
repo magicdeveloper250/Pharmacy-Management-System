@@ -223,7 +223,7 @@
 
                     fields.forEach(field => {
                         headerRow += `<th>${field.label}</th>`;
-                        bodyRow += `<td>${data[field.key] || 'N/A'}</td>`;
+                        bodyRow += `<td><b>${field.label}</b>${data[field.key] || 'N/A'}</td>`;
                     });
 
                     headerRow += '</tr>';
