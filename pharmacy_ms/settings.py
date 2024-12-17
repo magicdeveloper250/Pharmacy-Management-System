@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-1^yuf2@hc*-jg&bk7ukaa!si3wr6)x4)uh2z@mgyavuh3h*unf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["pharmacy-management-system-896t.onrender.com"]
 
 
 
@@ -157,4 +157,3 @@ PROFILE_IMAGE_SIZE = 2 * 1024 * 1024
 RESET_TOKEN_TIMEOUT=60
 
 LOGIN_URL = 'login'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
