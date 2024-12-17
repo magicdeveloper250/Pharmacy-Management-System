@@ -183,12 +183,93 @@
                             currency: currency.trim(),
                         }).format(amount);
         }
+      
 
+      $(".table-show-btn").on("click", function(){
+        $("#table-container").css({
+              display:"block",
+              position:"absolute",
+              top: '15%',
+              right: '0px',
+              transform: 'none',
+              backgroundColor:"white",
+              zIndex:1200,
+              height: "auto",
+              marginTop:"20px"
+          })
+      })
 
+      $(".btn-table-close").on("click", function(){
+        $("#table-container").css({
+              display:"none",
+              position:"relative",
+             
+          })
+      })
       $(".currency-button").on("click", function () {
       $(".currency-button").removeClass("active");  
       $(this).addClass("active"); 
       convertCurrency();
+ 
+      function initializeDraggable() {
+          $("#table-container").draggable({
+              handle: "#drag-handle",
+              containment: "window",
+          });
+      }
+
+   
+      $("#table-container").resizable({
+          alsoResize: "#supplier-table",
+          minWidth: 300,
+          minHeight: 200,
+          disabled: true,
+          handles: "all" 
+      });
+
+  
+      $("#pip-toggle").click(function () {
+          const container = $("#table-container");
+          const pipButtonIcon = $("#pip-toggle i");
+          container.toggleClass("pip-mode");
+          
+          if (container.hasClass("pip-mode")) {
+              pipButtonIcon.removeClass("fa-expand").addClass("fa-compress");
+             
+              initializeDraggable();
+              $("#drag-handle").fadeIn();
+          } else {
+              pipButtonIcon.removeClass("fa-compress").addClass("fa-expand");
+             
+              container.draggable('destroy')
+                  .css({
+                    
+                      top: '',
+                      right: '',
+                      transform: 'none'
+                  });
+              $("#drag-handle").fadeOut();
+          }
+      });
+
+ 
+      $("#exit-pip").click(function () {
+ 
+          $("#table-container")
+              .draggable('destroy')
+              .removeClass("pip-mode")
+              .css({
+                  position: 'static',
+                  top: '',
+                  left: '',
+                  padding: '0px',
+                  height: '',
+                  transform: 'none'
+              });
+          
+          $("#drag-handle").fadeOut();
+      });
+
 
     });
 

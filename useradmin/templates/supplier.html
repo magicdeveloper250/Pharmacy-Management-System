@@ -7,7 +7,8 @@
             <div>
                 <h3><i class="fa fa-truck fa-lg"></i> Supplier Management</h3>
             </div>
-            <div class="text-right">
+            <div  >
+                <button class="btn btn-outline-secondary table-show-btn" > <i class="fa fa-table"></i></button>
                 <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
                 <a href="{% url 'admin_dash' %}" class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
             </div>
@@ -178,66 +179,6 @@
                         $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
                     });
                 });
-
-    // Initialize drag and resize functionality
-function initializeDraggable() {
-    $("#supplier-table-container").draggable({
-        handle: "#drag-handle",
-        containment: "window",
-    });
-}
-
-// Initialize resizable
-$("#supplier-table-container").resizable({
-    alsoResize: "#supplier-table",
-    minWidth: 300,
-    minHeight: 200,
-    disabled: true,
-    handles: "all" 
-});
-
-// Toggle Picture-in-Picture mode
-$("#pip-toggle").click(function () {
-    const container = $("#supplier-table-container");
-    const pipButtonIcon = $("#pip-toggle i");
-    container.toggleClass("pip-mode");
-    
-    if (container.hasClass("pip-mode")) {
-        pipButtonIcon.removeClass("fa-expand").addClass("fa-compress");
-        // Initialize draggable when entering PiP mode
-        initializeDraggable();
-        $("#drag-handle").fadeIn();
-    } else {
-        pipButtonIcon.removeClass("fa-compress").addClass("fa-expand");
-        // Reset position and destroy draggable when exiting PiP mode
-        container.draggable('destroy')
-            .css({
-              
-                top: '',
-                right: '',
-                transform: 'none'
-            });
-        $("#drag-handle").fadeOut();
-    }
-});
-
-// Reset position and size when exiting PiP mode
-$("#exit-pip").click(function () {
-    // Destroy draggable functionality
-    $("#supplier-table-container")
-        .draggable('destroy')
-        .removeClass("pip-mode")
-        .css({
-            position: 'static',
-            top: '',
-            left: '',
-            padding: '0px',
-            height: '',
-            transform: 'none'
-        });
-    
-    $("#drag-handle").fadeOut();
-});
 
 
             });

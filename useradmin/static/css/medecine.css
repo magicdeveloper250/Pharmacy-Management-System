@@ -8,7 +8,9 @@
 }
 
 
-
+.table-show-btn{
+    display: none;
+  }
 @media (max-width: 768px) {
     .medecine-header{
         display: flex; 
@@ -19,4 +21,13 @@
     .medecine-header h3 i{
         display: none;
     }
+    .table-show-btn{
+        display: inline;
+      }
+ 
+
 }
+
+
+  
+ 
