@@ -1,0 +1,40 @@
+#customer-table thead {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+}
+ 
+#table-search-box{
+    display: flex;
+    justify-content: flex-end;
+    margin-block: 1em;
+}
+ 
+#customer-table th, #customer-table td {
+    padding: 10px;
+}
+
+#customer-table th, #customer-table tr{
+    cursor: pointer;
+}
+ 
+#table-container {
+    overflow-y: auto;
+}
+
+
+.customer-search{
+    display: inline-flex;
+    
+}
+@media (max-width: 768px) {
+    .customer-search button{
+         display: none;
+         
+    }
+    .customer-search input{
+        width: 100%;
+    }
+    
+}
