@@ -22,3 +22,19 @@
 #table-container {
     overflow-y: auto;
 }
+
+
+.customer-search{
+    display: inline-flex;
+    
+}
+@media (max-width: 768px) {
+    .customer-search button{
+         display: none;
+         
+    }
+    .customer-search input{
+        width: 100%;
+    }
+    
+}

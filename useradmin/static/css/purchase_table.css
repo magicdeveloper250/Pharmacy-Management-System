@@ -1,0 +1,15 @@
+
+.purchase-search{
+    display: inline-flex;
+    
+}
+@media (max-width: 768px) {
+    .purchase-search button{
+         display: none;
+         
+    }
+    .purchase-search input{
+        width: 100%;
+    }
+    
+}

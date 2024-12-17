@@ -1,9 +1,9 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/table.css' %}">
+<link rel="stylesheet" href="{%static 'css/customer_table.css'%}">
 <div id="customer-table-container" class="col-md-12 mb-3" style="height: 40vh; overflow-y: auto; resize: vertical;">
-    <!-- Search Box -->
     <div id="table-search-box" class="d-flex justify-content-between mb-2">
-        <div class="input-group w-50">
+        <div class="customer-search">
             <input type="text" id="search-customer" class="form-control" placeholder="Search customer..." aria-label="Search customer">
             <button id="search-button" class="btn btn-secondary">
                 <i class="fa fa-search"></i> Search
@@ -11,7 +11,6 @@
         </div>
     </div>
 
-    <!-- Customer Table -->
     <table class="table table-bordered table-striped" id="customer-table">
         <thead>
             <tr>
@@ -23,6 +22,7 @@
                 <th>Phone Number</th>
                 <th>Address</th>
                 <th>Allergies</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>

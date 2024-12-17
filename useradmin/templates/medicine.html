@@ -1,8 +1,9 @@
 {% extends "admin_dashboard.html" %}
 {% load static %}
 {% block main_content %}
+<link rel="stylesheet" href="{%static 'css/medecine.css'%}">
     <div class="container mt-0">
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+        <div class="medecine-header">
             <div >
                 <h3><i class="fa fa-pills fa-lg"></i> Medicine Management</h3>
             </div>
@@ -36,14 +37,14 @@
                     let el = ``;
                     medicines.forEach(medicine => {
                         el += `<tr class="medicine-row" data-id="${medicine.id}">
-                                    <td>${medicine.id}</td>
-                                    <td>${medicine.name}</td>
-                                    <td>${medicine.formulation}</td>
-                                    <td>${medicine.strength}</td>
-                                    <td>${medicine.batch_number}</td>
-                                    <td>${medicine.quantity_in_stock}</td>
-                                    <td class="currency-display" data-rwf="${medicine.price}">${formattedPrice(medicine.price)}</td>
-                                    <td><button class="btn btn-outline-danger delete-btn" data-id="${medicine.id}"><i class="fa fa-trash"></i></button></td>
+                                    <td><b>ID</b>${medicine.id}</td>
+                                    <td> <b>Medicine Name</b>${medicine.name}</td>
+                                    <td><b>Formulation</b>${medicine.formulation}</td>
+                                    <td> <b>Strength</b>${medicine.strength}</td>
+                                    <td><b>Batch Number</b>${medicine.batch_number}</td>
+                                    <td><b>Quantity in Stock</b>${medicine.quantity_in_stock}</td>
+                                    <td class="currency-display" data-rwf="${medicine.price}"> <b>Price</b>${formattedPrice(medicine.price)}</td>
+                                    <td><b>Action</b><button class="btn btn-outline-danger delete-btn border-0" data-id="${medicine.id}"><i class="fa fa-trash fa-sm"></i> Delete</button></td>
                                 </tr>`
                     });
                     $("#medicine-table > tbody").html(el);
@@ -197,10 +198,10 @@
                 });
             } );
 
-            $("#quantity_in_stock").spinner({
-                numberFormat: "n", 
-                min: 0  
-            });
+            // $("#quantity_in_stock").spinner({
+            //     numberFormat: "n", 
+            //     min: 0  
+            // });
 
             $("#quantity_in_stock").on("input", function () {
                 if ($(this).val() < 0) {

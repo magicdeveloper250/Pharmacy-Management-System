@@ -180,7 +180,7 @@ class Sales(models.Model):
         ('CARD', 'Card'),
         ('ONLINE', 'Online Payment'),
     ], default='CASH')
-    
+    receipt = models.FileField(upload_to='receipts/', null=True, blank=True)
 
     def __str__(self):
         return f"Sale to {self.customer} on {self.sale_date}"
@@ -193,6 +193,7 @@ class Sales(models.Model):
             'total_price': self.total_price,
             'sale_date': self.sale_date,
             'payment_method': self.payment_method,
+            'receipt': self.receipt.url if self.receipt else None,
         }
     
 

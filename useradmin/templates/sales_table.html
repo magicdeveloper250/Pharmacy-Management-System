@@ -1,18 +1,17 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/table.css' %}">
+<link rel="stylesheet" href="{%static 'css/sales_table.css'%}">
 
 <div id="sales-table-container" class="col-md-12 mb-3" style="height: 40vh; overflow-y: auto; resize: vertical;">
-    <!-- Search Box -->
+   
     <div id="table-search-box" class="d-flex justify-content-between mb-2">
-        <div class="input-group w-50">
+        <div class="sales-search">
             <input type="text" id="search-sales" class="form-control" placeholder="Search sales..." aria-label="Search sales">
             <button id="search-button" class="btn btn-secondary">
                 <i class="fa fa-search"></i> Search
             </button>
         </div>
     </div>
-
-    <!-- Sales Table -->
     <table class="table table-bordered table-striped" id="sales-table">
         <thead>
             <tr>
@@ -22,6 +21,8 @@
                 <th>Date</th>
                 <th>Payment Method</th>
                 <th>Amount</th>
+                <th>Receipt</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>

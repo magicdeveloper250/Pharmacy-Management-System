@@ -1,17 +1,18 @@
 {% extends "base.html" %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
-{% block content %}
-<div class="container-fluid m-0 p-0">
-    <div class="row">
-        <div class="col-md-3 col-lg-2 bg-light vh-100" style="overflow-y: auto;">
-            {% include "sidebar.html" %}
-        </div>
 
-        <div class="col-md-9 col-lg-10 p-4" style="height: 100vh; overflow-y: auto;">
-            {% block main_content %}
-            {%endblock%}
-        </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="sidebar-wrapper">
+        {% include "sidebar.html" %}
+    </div>
+    
+    <div class="main-content">
+        {% block main_content %}{% endblock %}
     </div>
 </div>
 {% endblock %}

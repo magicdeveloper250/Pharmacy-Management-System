@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
+from .utils import generate_receipt
 
 @require_http_methods(["GET"])
 def index(request):
@@ -49,11 +50,13 @@ def add_sale(request):
             medicine.quantity_in_stock -= int(quantity)
             medicine.save()
 
-        Sales.objects.create(
+        sale=Sales.objects.create(
             customer=customer ,
             cart= cart,
             total_price=data.get("totalPrice"),
         )
+        receipt_content = generate_receipt(sale)
+        sale.receipt.save(f"receipt_{sale.id}.pdf", receipt_content)
         sales = list(Sales.objects.all())
         sales = [ sale.to_json() for sale in sales]
         return JsonResponse({'status': 'success', 'message': 'Sales added successfully!', 'sales': sales})

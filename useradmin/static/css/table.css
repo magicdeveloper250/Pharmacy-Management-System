@@ -40,3 +40,42 @@
     background-color: #f1f1f1;  
     color: #007bff; 
 }
+
+
+
+tbody tr b{
+    display: none;
+}
+
+ 
+@media screen and (max-width: 768px) {
+ 
+    tbody tr b{
+        display: block;
+    }
+    tr {
+      
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1em;
+        
+         
+        
+    }
+
+    td {
+        display: flex;
+
+        justify-content: space-between;
+         
+         
+    }
+
+     
+    .table thead{
+        display: none;
+    }
+
+  
+ 
+}

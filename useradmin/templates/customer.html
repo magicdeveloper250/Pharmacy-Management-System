@@ -1,8 +1,9 @@
 {% extends "admin_dashboard.html" %}
 {% load static %}
 {% block main_content %}
+<link rel="stylesheet" href="{%static 'css/customer.css'%}">
     <div class="container mt-0">
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+        <div  class="customer-header">
             <div>
                 <h3><i class="fa fa-users fa-lg"></i> Customer Management</h3>
             </div>
@@ -35,17 +36,17 @@
                     let el = ``;
                     customers.forEach(customer => {
                         el += `<tr class="customer-row" data-id="${customer.id}">
-                                    <td>${customer.id}</td>
-                                    <td>${customer.first_name}</td>
-                                    <td>${customer.last_name}</td>
-                                    <td>${customer.date_of_birth}</td>
-                                    <td>${customer.email}</td>
-                                    <td>${customer.phone_number}</td>
-                                    <td>${customer.address}</td>
-                                    <td>${customer.allergies || "None"}</td>
-                                    <td>
-                                        <button class="btn btn-outline-danger delete-btn" data-id="${customer.id}">
-                                            <i class="fa fa-trash"></i>
+                                    <td><b>ID</b>${customer.id}</td>
+                                    <td><b>First Name</b>${customer.first_name}</td>
+                                    <td><b>Last Name</b>${customer.last_name}</td>
+                                    <td><b>Date of Birth</b>${customer.date_of_birth}</td>
+                                    <td><b>Email</b><a href="mailto:${customer.email}"  class="btn border-0">${customer.email} <i class="fas fa-external-link-alt"></i></a></td>
+                                    <td><b>Phone Number</b><a href="tel:${customer.phone_number} "  class="btn border-0">${customer.phone_number} <i class="fas fa-external-link-alt"></i></a></td>
+                                    <td><b>Address</b>${customer.address}</td>
+                                    <td><b>Allergies</b>${customer.allergies || "None"}</td>
+                                    <td><b>Action</b>
+                                        <button class="btn btn-outline-danger delete-btn border-0" data-id="${customer.id}">
+                                            <i class="fa fa-trash fa-sm"></i> Delete
                                         </button>
                                     </td>
                                 </tr>`;

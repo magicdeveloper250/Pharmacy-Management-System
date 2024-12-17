@@ -1,8 +1,9 @@
 {% extends "admin_dashboard.html" %}
 {% load static %}
 {% block main_content %}
+<link rel="stylesheet" href="{%static 'css/supplier.css'%}">
     <div class="container mt-0">
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+        <div class="supplier-header">
             <div>
                 <h3><i class="fa fa-truck fa-lg"></i> Supplier Management</h3>
             </div>
@@ -12,7 +13,7 @@
             </div>
         </div>
 
-        <div class="row" style="display: flex; flex-direction: column; height: 90vh;">
+        <div class="row" style="display: flex; flex-direction: column;">
             {% include 'supplier_form.html' %}
             <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
             {% include 'supplier_table.html' %}
@@ -37,16 +38,16 @@
                     let el = ``;
                     suppliers.forEach(supplier => {
                         el += `<tr class="supplier-row" data-id="${supplier.id}">
-                                    <td>${supplier.id}</td>
-                                    <td>${supplier.name}</td>
-                                    <td>${supplier.contact_name}</td>
-                                    <td>${supplier.contact_phone}</td>
-                                    <td>${supplier.contact_email}</td>
-                                    <td>${supplier.address}</td>
-                                    <td>${supplier.lead_time} days</td>
-                                    <td>
-                                        <button class="btn btn-outline-danger delete-btn" data-id="${supplier.id}">
-                                            <i class="fa fa-trash"></i>
+                                    <td><b>ID</b>${supplier.id}</td>
+                                    <td><b>Name</b>${supplier.name}</td>
+                                    <td><b>Contact Name</b>${supplier.contact_name}</td>
+                                    <td><b>Phone</b> <a href="tel:${supplier.contact_phone}"  class="btn border-0">${supplier.contact_phone} <i class="fas fa-external-link-alt"></i></a></td>
+                                    <td><b>Email</b> <a href="mailto:${supplier.contact_email}"  class="btn border-0">${supplier.contact_email} <i class="fas fa-external-link-alt"></i></a></td>
+                                    <td><b>Address</b>${supplier.address}</td>
+                                    <td><b>Lead Time</b>${supplier.lead_time} days</td>
+                                    <td><b>Action</b>
+                                        <button class="btn btn-outline-danger delete-btn border-0" data-id="${supplier.id}">
+                                            <i class="fa fa-trash fa-sm"></i> Delete
                                         </button>
                                     </td>
                                 </tr>`;
@@ -177,6 +178,67 @@
                         $(this).toggle($(this).text().toLowerCase().indexOf(searchValue) > -1);
                     });
                 });
+
+    // Initialize drag and resize functionality
+function initializeDraggable() {
+    $("#supplier-table-container").draggable({
+        handle: "#drag-handle",
+        containment: "window",
+    });
+}
+
+// Initialize resizable
+$("#supplier-table-container").resizable({
+    alsoResize: "#supplier-table",
+    minWidth: 300,
+    minHeight: 200,
+    disabled: true,
+    handles: "all" 
+});
+
+// Toggle Picture-in-Picture mode
+$("#pip-toggle").click(function () {
+    const container = $("#supplier-table-container");
+    const pipButtonIcon = $("#pip-toggle i");
+    container.toggleClass("pip-mode");
+    
+    if (container.hasClass("pip-mode")) {
+        pipButtonIcon.removeClass("fa-expand").addClass("fa-compress");
+        // Initialize draggable when entering PiP mode
+        initializeDraggable();
+        $("#drag-handle").fadeIn();
+    } else {
+        pipButtonIcon.removeClass("fa-compress").addClass("fa-expand");
+        // Reset position and destroy draggable when exiting PiP mode
+        container.draggable('destroy')
+            .css({
+              
+                top: '',
+                right: '',
+                transform: 'none'
+            });
+        $("#drag-handle").fadeOut();
+    }
+});
+
+// Reset position and size when exiting PiP mode
+$("#exit-pip").click(function () {
+    // Destroy draggable functionality
+    $("#supplier-table-container")
+        .draggable('destroy')
+        .removeClass("pip-mode")
+        .css({
+            position: 'static',
+            top: '',
+            left: '',
+            padding: '0px',
+            height: '',
+            transform: 'none'
+        });
+    
+    $("#drag-handle").fadeOut();
+});
+
 
             });
 

@@ -5,39 +5,49 @@
         {% csrf_token %}
         <div class="row">
             <input type="hidden" id="id" name="customer_id" value="">
-            <div class="col-md-6 mb-3">
-                <label for="first_name" class="form-label">First Name</label>
-                <input type="text" class="form-control" id="first_name" name="first_name" maxlength="255" required>
+             
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First name" required>
+                    <label for="first_name">First Name</label>
+                </div>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <label for="last_name" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="last_name" name="last_name" maxlength="255" required>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="last_name" name="last_name" maxlength="255" placeholder="Last Name" required>
+                    <label for="last_name">Last Name</label>
+                </div>
             </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="date_of_birth" class="form-label">Date of Birth</label>
-                <input type="text" class="form-control" id="date_of_birth" name="date_of_birth" required>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="date_of_birth" name="date_of_birth" placeholder="Date of Birth" required>
+                    <label for="date_of_birth">Date of Birth</label>
+                </div>
             </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="email" name="email" required placeholder="Email">
+                    <label for="email"  >Email</label>
+                </div>
             </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="phone_number" class="form-label">Phone Number</label>
-                <input type="tel" class="form-control" id="phone_number" name="phone_number"  required pattern="+?[1-9]\d{1,14}">
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="tel" class="form-control" id="phone_number" name="phone_number"  required pattern="+?[1-9]\d{1,14}" placeholder="Phone Number">
+                    <label for="phone_number">Phone Number</label>
+                </div>
             </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="address" class="form-label">Address</label>
-                <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" id="address" name="address" rows="3" required placeholder="Address"></textarea>
+                    <label for="address" class="form-label">Address</label>
+                </div>
             </div>
-
-            <div class="col-md-6 mb-3">
-                <label for="allergies" class="form-label">Allergies</label>
-                <textarea class="form-control" id="allergies" name="allergies" rows="3"></textarea>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" id="allergies" name="allergies" rows="3" placeholder="Allergies"></textarea>
+                    <label for="allergies">Allergies</label>
+                </div>
             </div>
         </div>
 

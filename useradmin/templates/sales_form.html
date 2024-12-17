@@ -4,14 +4,17 @@
     <form method="POST" action="{% url 'sales' %}" id="salesForm">
         {% csrf_token %}
         <div class="row">
-            <div class="col-md-6 mb-3">
-                <label for="customer" class="form-label">Customer</label>
-                <select class="form-control" id="customer" name="customer" required>
-                    {% for customer in customers %}
-                        <option value="{{ customer.id }}">{{ customer.first_name }} {{ customer.last_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <select class="form-control" id="customer" name="customer" required>
+                        
+                        {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.first_name }} {{ customer.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="customer"  >Customer</label>
+                </div>
+            </div>           
 
             <div class="col-md-6 mb-3">
                 <label for="medicine" class="form-label">Medicine</label>
@@ -24,13 +27,8 @@
                 </select>
             </div>
 
-            <!-- <div class="col-md-6 mb-3">
-                <label for="quantity" class="form-label">Quantity</label> <br>
-                <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
-            </div> -->
-
             <div class="col-md-6 mb-3">
-                <label for="total_price" class="form-label">Total Price</label>
+                <label for="total_price" class="form-label">Total</label>
                 <div id="total_price_display" class="currency-display" data-rwf="0"></div>
 
             </div>
@@ -73,7 +71,7 @@
 
                         <div class="mb-3">
                             <label for="sale-quantity" class="form-label">Quantity</label>
-                            <input type="number" class="form-control" id="sale-quantity" name="quantity" min="1" required>
+                            <input type="number" class="form-control" id="sale-quantity" name="quantity" min="1" required >
                         </div>
                     </div>
                     <div class="modal-footer">

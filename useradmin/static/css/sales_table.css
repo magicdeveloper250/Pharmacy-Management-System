@@ -1,0 +1,15 @@
+
+.sales-search{
+    display: inline-flex;
+    
+}
+@media (max-width: 768px) {
+    .sales-search button{
+         display: none;
+         
+    }
+    .sales-search input{
+        width: 100%;
+    }
+    
+}

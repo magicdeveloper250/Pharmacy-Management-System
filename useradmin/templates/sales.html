@@ -1,8 +1,9 @@
 {% extends "admin_dashboard.html" %}
 {% load static %}
 {% block main_content %}
+<link rel="stylesheet" href="{%static 'css/sales.css'%}">
     <div class="container mt-0">
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+        <div class="sales-header">
             <div>
                 <h3><i class="fa fa-shopping-cart fa-lg"></i> Sales Management</h3>
             </div>
@@ -25,7 +26,8 @@
             <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
             {% include 'sales_table.html' %}
         </div>
-
+        
+        
         <script>
             $(document).ready(function () {
                 const $resizer = $('#resizer');
@@ -44,15 +46,16 @@
                     let el = ``;
                     sales.forEach(sale => {
                         el += `<tr class="sale-row" data-id="${sale.id}">
-                                    <td>${sale.id}</td>
-                                    <td class="customer-cell clickable-cell" data-id="${sale.customer.id}">${sale.customer.first_name} ${sale.customer.last_name} <i class="fa fa-link"></i></td>
-                                    <td class="cart-cell clickable-cell" data-id="${sale.cart}">${sale.cart} <i class="fa fa-link"></i></td>
-                                    <td>${sale.sale_date}</td>
-                                    <td>${sale.payment_method}</td>
-                                    <td class="currency-display" data-rwf="${sale.total_price}">${formattedPrice(sale.total_price)}</td>
-                                    <td>
-                                        <button class="btn btn-outline-danger delete-btn" data-id="${sale.id}">
-                                            <i class="fa fa-trash"></i>
+                                    <td><b>ID</b>${sale.id}</td>
+                                    <td class="customer-cell clickable-cell" data-id="${sale.customer.id}"><b>Customer</b>${sale.customer.first_name} ${sale.customer.last_name} <i class="fas fa-external-link-alt"></i></td>
+                                    <td class="cart-cell clickable-cell" data-id="${sale.cart}"><b>Cart</b>${sale.cart} <i class="fas fa-external-link-alt"></i></td>
+                                    <td><b>Date</b>${sale.sale_date}</td>
+                                    <td><b>Payment Method</b>${sale.payment_method}</td>
+                                    <td class="currency-display" data-rwf="${sale.total_price}"><b>Amount</b>${formattedPrice(sale.total_price)}</td>
+                                        ${sale.receipt?`<td><b>Receipt</b> <a href="${sale.receipt}">Receipt</a></td>`:`<td><b>Receipt</b>No Receipt</td>`}
+                                    <td><b>Action</b>
+                                        <button class="btn btn-outline-danger delete-btn border-0" data-id="${sale.id}">
+                                            <i class="fa fa-trash fa-sm"></i> Delete
                                         </button>
                                     </td>
                                 </tr>`;
@@ -201,10 +204,10 @@
                     headerRow += '</tr>';
                     bodyRow += '<tr>';
                         bodyRow += `<td>1</td>`;
-                        bodyRow += `<td class="customer-cell clickable-cell" data-id="${data.customer.id}">${data.customer.first_name +' '+data.customer.last_name} <i class="fa fa-link"></i></td>`;
+                        bodyRow += `<td class="customer-cell clickable-cell" data-id="${data.customer.id}">${data.customer.first_name +' '+data.customer.last_name} <i class="fas fa-external-link-alt"></i></td>`;
                         bodyRow += `<td>${data.doctor_name}</td>`;
                         bodyRow += `<td>${data.prescription_date}</td>`;
-                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${data.medicine.id}">${data.medicine.name || 'N/A'} <i class="fa fa-link"></i></td>`;
+                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${data.medicine.id}">${data.medicine.name || 'N/A'} <i class="fas fa-external-link-alt"></i></td>`;
                         bodyRow += `<td>${data.dosage|| 'N/A'}</td>`;
                         bodyRow += `<td>${data.instructions|| 'N/A'}</td>`;
                         bodyRow += '</tr>';
@@ -228,10 +231,10 @@
                     data.forEach((d, index) => {
                         bodyRow += '<tr>';
                         bodyRow += `<td>${index+1}</td>`;
-                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${d.medicine.id}">${d.medicine.name || 'N/A'} <i class="fa fa-link"></i></td>`;
+                        bodyRow += `<td class="medicine-cell clickable-cell" data-id="${d.medicine.id}">${d.medicine.name || 'N/A'} <i class="fas fa-external-link-alt"></i></td>`;
                         bodyRow += `<td>${d.quantity || 'N/A'}</td>`;
                         if(d.perscription)
-                            bodyRow += `<td class="cart-perscription-cell clickable-cell" data-id="${d.perscription}">${d.perscription || 'N/A'} <i class="fa fa-link"></i></td>`;
+                            bodyRow += `<td class="cart-perscription-cell clickable-cell" data-id="${d.perscription}">${d.perscription || 'N/A'} <i class="fas fa-external-link-alt"></i></td>`;
                         bodyRow += '</tr>';
                     });
 
@@ -284,7 +287,7 @@
                     }).text(`${sale.product.name} - ${formattedPrice(sale.product.price)}`);  
                 };
 
-                // Fetch sales on page load
+                 
                 $.get("{% url 'get_sales' %}", function (response) {
                     if (response.status === 'success') {
                         renderSales(response.sales);
@@ -415,7 +418,7 @@
                         $tableBody.append(`
                             <tr>
                                 <td>${index + 1}</td>
-                                <td class="medicine-cell clickable-cell" data-id="${medicine.id}">${medicine.name} <i class="fa fa-link"></i></td>
+                                <td class="medicine-cell clickable-cell" data-id="${medicine.id}">${medicine.name} <i class="fas fa-external-link-alt"></i></td>
                                 <td>
                                     <input type="number" name="quantity" class="form-control" 
                                         value="${medicine.sale_quantity}" min="1" 
@@ -619,6 +622,8 @@
             
            
         </script>
+    
         <script src="{%static 'plugins/multiselect-dropdown.js'%}"></script>
+        
     </div>
 {% endblock %}

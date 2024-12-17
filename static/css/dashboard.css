@@ -26,4 +26,9 @@
     transform: scale(1.05);
 }
 
+.my-grid-row{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
 

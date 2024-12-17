@@ -1,8 +1,9 @@
 {% extends "admin_dashboard.html" %}
 {% load static %}
 {% block main_content %}
+<link rel="stylesheet" href="{%static 'css/purchase.css'%}">
     <div class="container mt-0">
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background-color: #f8f9fa; border-bottom: 1px solid #ddd;">
+        <div class="purchase-header">
             <div>
                 <h3><i class="fa fa-shopping-cart fa-lg"></i> Purchase Management</h3>
             </div>
@@ -35,15 +36,15 @@
                     let el = ``;
                     purchases.forEach(purchase => {
                         el += `<tr class="purchase-row" data-id="${purchase.id}">
-                                    <td>${purchase.id}</td>
-                                    <td class="supplier-cell clickable-cell" data-id="${purchase.supplier.id}">${purchase.supplier.contact_name}  <i class="fa fa-link"></i></td>
-                                    <td class="medicine-cell clickable-cell" data-id="${purchase.medicine.id}">${purchase.medicine.name}   <i class="fa fa-link"></i></td>
-                                    <td>${purchase.quantity}</td>
-                                    <td class="currency-display" data-rwf=${purchase.total_price}>${formattedPrice(purchase.total_price)}</td>
-                                    <td>${purchase.purchase_date}</td>
+                                    <td><b>ID</b>${purchase.id}</td>
+                                    <td class="supplier-cell clickable-cell" data-id="${purchase.supplier.id}"><b>Supplier</b>${purchase.supplier.contact_name}  <i class="fas fa-external-link-alt"></i></td>
+                                    <td class="medicine-cell clickable-cell" data-id="${purchase.medicine.id}"><b>Medicine</b>${purchase.medicine.name}<i class="fas fa-external-link-alt"></i></td>
+                                    <td><b>Quantity</b>${purchase.quantity}</td>
+                                    <td class="currency-display" data-rwf=${purchase.total_price}><b>Total Price</b>${formattedPrice(purchase.total_price)}</td>
+                                    <td><b>Purchase Date</b>${purchase.purchase_date}</td>
                                     <td>
-                                        <button class="btn btn-outline-danger delete-btn" data-id="${purchase.id}">
-                                            <i class="fa fa-trash"></i>
+                                        <b>Action</b><button class="btn btn-outline-danger delete-btn border-0" data-id="${purchase.id}">
+                                           <i class="fa fa-trash fa-sm"></i> Delete
                                         </button>
                                     </td>
                                 </tr>`;
@@ -263,11 +264,7 @@
             function submitForm() {
                 $('#purchaseForm').submit();
             }
-
-            $("#quantity").spinner({
-                numberFormat: "n", 
-                min: 0  
-            });
+ 
 
             $("#quantity").on("input", function () {
                 if ($(this).val() < 0) {

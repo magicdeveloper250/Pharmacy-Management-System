@@ -1,67 +1,148 @@
 {% load static %}
- 
 <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
-<div class="nav-side-menu">
-    <div class="brand">
-        <img src="{% static 'images/avatar.jpg' %}" alt="profile image" class="avatar">
-        <span>{{ request.user.username }}</span>
-        <a href="{% url 'logout' %}" class="btn btn-outline-danger mb-3">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
+<aside class="sidebar">
+    <!-- Profile Section -->
+    <div class="sidebar-profile">
+        <div class="profile-desktop">
+            <img src="{% static 'images/avatar.jpg' %}" alt="User Profile" class="profile-avatar">
+            <div class="profile-info">
+                <span class="username">{{ request.user.username }}</span>
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+        
+        <!-- Mobile Profile Dropdown -->
+        <div class="mobile-header">
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <span class="mobile-title">Pharmacy MS</span>
+            <div class="mobile-profile-dropdown">
+                <button class="profile-toggle">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="dropdown-content">
+                    <img src="{% static 'images/avatar.jpg' %}" alt="User Profile" class="profile-avatar">
+                    <span class="username">{{ request.user.username }}</span>
+                    <a href="{% url 'logout' %}" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-    <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
 
-    <div class="menu-list">
-        <ul id="menu-content" class="menu-content collapse out">
-            <li class="{% if active_tab == 'dash' %}active{% endif %}">
-                <a href="{%url 'admin_dash'%}?tab=dash">
-                    <i class="fa fa-clock fa-lg"></i> Dashboard
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav">
+        <ul class="nav-menu">
+            <li class="nav-item {% if active_tab == 'dash' %}active{% endif %}">
+                <a href="{% url 'admin_dash' %}?tab=dash">
+                    <i class="fa fa-clock"></i>
+                    <span>Dashboard</span>
                 </a>
             </li>
-
-            <li data-toggle="collapse" data-target="#new"  class="{% if active_tab == 'medicine' %}active{% endif %}">
-
-            <a href="{%url 'medicine'%}?tab=medicine"> <i class="fa fa-pills fa-lg"></i> Medicine Management</a></li>
+            <li class="nav-item {% if active_tab == 'medicine' %}active{% endif %}">
+                <a href="{% url 'medicine' %}?tab=medicine">
+                    <i class="fa fa-pills"></i>
+                    <span>Medicine Management</span>
+                </a>
             </li>
-          
-
-            <li data-toggle="collapse" data-target="#customer" class="{% if active_tab == 'customer' %}active{% endif %}">
-                <a href="{%url 'customer'%}?tab=customer"><i class="fa fa-users fa-lg"></i> Customer Management </a>
+            <li class="nav-item {% if active_tab == 'customer' %}active{% endif %}">
+                <a href="{% url 'customer' %}?tab=customer">
+                    <i class="fa fa-users"></i>
+                    <span>Customer Management</span>
+                </a>
             </li>
-            
-
-          
-            <li data-toggle="collapse" data-target="#supplier" class="{% if active_tab == 'supplier' %}active{% endif %}">
-                <a href="{%url 'supplier'%}?tab=supplier"><i class="fa fa-truck fa-lg"></i> Supplier  Management</a>
+            <li class="nav-item {% if active_tab == 'supplier' %}active{% endif %}">
+                <a href="{% url 'supplier' %}?tab=supplier">
+                    <i class="fa fa-truck"></i>
+                    <span>Supplier Management</span>
+                </a>
             </li>
-
-            <li data-toggle="collapse" data-target="#purchase" class="{% if active_tab == 'purchase' %}active{% endif %}">
-                <a href="{%url 'purchase'%}?tab=purchase"><i class="fa fa-shopping-cart fa-lg"></i> Purchase Management</a>
+            <li class="nav-item {% if active_tab == 'purchase' %}active{% endif %}">
+                <a href="{% url 'purchase' %}?tab=purchase">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span>Purchase Management</span>
+                </a>
             </li>
-            <li data-toggle="collapse" data-target="#purchase" class="{% if active_tab == 'sales' %}active{% endif %}">
-                <a href="{%url 'sales'%}?tab=sales"><i class="fas fa-dollar-sign fa-lg"></i> Sales Management</a>
+            <li class="nav-item {% if active_tab == 'sales' %}active{% endif %}">
+                <a href="{% url 'sales' %}?tab=sales">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Sales Management</span>
+                </a>
             </li>
         </ul>
-    </div>
-</div>
+    </nav>
+</aside>
+<script>$(document).ready(function() {
+    const $sidebar = $('.sidebar');
+    const $menuToggle = $('.menu-toggle');
+    const $profileToggle = $('.profile-toggle');
+    const $mobileDropdown = $('.mobile-profile-dropdown');
+    const $navItems = $('.nav-item');
 
- 
-<script>
- $(document).ready(function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const activeTab = urlParams.get('tab') || 'dash';  
-    $('.menu-content > li').each(function () {
-        const link = $(this).find('a').attr('href');
-        if (link && link.includes(`tab=${activeTab}`)) {
-            $(this).addClass('active');
-        } else {
-            $(this).removeClass('active');
+    $menuToggle.on('click', function() {
+        $sidebar.toggleClass('active');
+    });
+
+    $profileToggle.on('click', function(e) {
+        e.stopPropagation();
+        $mobileDropdown.toggleClass('active');
+    });
+
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.mobile-profile-dropdown').length) {
+            $mobileDropdown.removeClass('active');
         }
     });
-    $('.menu-content > li').on('click', function () {
-        $('.menu-content > li').removeClass('active');  
-        $(this).addClass('active');  
-    });
-});
 
-</script>
+ 
+
+    const setActiveTab = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeTab = urlParams.get('tab') || 'dash';
+        
+        $navItems.each(function() {
+            const $link = $(this).find('a');
+            if ($link.attr('href').includes(`tab=${activeTab}`)) {
+                $(this).addClass('active');
+            } else {
+                $(this).removeClass('active');
+            }
+        });
+    };
+
+    setActiveTab();
+
+    $navItems.on('click', function() {
+        $navItems.removeClass('active');
+        $(this).addClass('active');
+    });
+
+    $navItems.hover(
+        function() {
+            $(this).find('i').stop(true, true).animate({ marginLeft: '5px' }, 200);
+        },
+        function() {
+            $(this).find('i').stop(true, true).animate({ marginLeft: '0px' }, 200);
+        }
+    );
+
+    if ($(window).width() < 768) {
+        $navItems.on('click', function() {
+            $sidebar.removeClass('active');
+        });
+    }
+
+    $(window).on('resize', function() {
+        if ($(window).width() > 768) {
+            $sidebar.addClass('active');
+        } else {
+            $sidebar.removeClass('active');
+        }
+    });
+
+ 
+});</script>

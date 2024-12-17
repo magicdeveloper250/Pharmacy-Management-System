@@ -1,9 +1,9 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/table.css' %}">
+<link rel="stylesheet" href="{%static 'css/purchase_table.css'%}">
 <div id="purchase-table-container" class="col-md-12 mb-3" style="height: 40vh; overflow-y: auto; resize: vertical;">
-    <!-- Search Box -->
     <div id="table-search-box" class="d-flex justify-content-between mb-2">
-        <div class="input-group w-50">
+        <div class="purchase-search">
             <input type="text" id="search-purchase" class="form-control" placeholder="Search purchase..." aria-label="Search purchase">
             <button id="search-button" class="btn btn-secondary">
                 <i class="fa fa-search"></i> Search
@@ -11,7 +11,6 @@
         </div>
     </div>
 
-    <!-- Purchase Table -->
     <table class="table table-bordered table-striped" id="purchase-table">
         <thead>
             <tr>
@@ -21,6 +20,7 @@
                 <th>Quantity</th>
                 <th>Total Price</th>
                 <th>Purchase Date</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
