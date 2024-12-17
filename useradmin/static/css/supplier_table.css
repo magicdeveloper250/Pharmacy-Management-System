@@ -1,0 +1,19 @@
+
+.supplier-search{
+    display: inline-flex;
+    
+}
+@media (max-width: 768px) {
+    .supplier-search button{
+         display: none;
+         
+    }
+    .supplier-search input{
+        width: 100%;
+    }
+    
+}
+
+  
+
+ 
