@@ -10,6 +10,14 @@ def index(request):
     customers= Customer.objects.count()
     medicines= Medicine.objects.count()
     suppliers=Supplier.objects.count()
+    medicines_count = Medicine.objects.count()
+    medicines_expiring_soon = Medicine.objects.filter(expiration_date__lte=timezone.now().date() + timezone.timedelta(days=30))
+   
+    total_quantity_in_stock = Medicine.objects.aggregate(Sum('quantity_in_stock'))['quantity_in_stock__sum'] or 0
+    total_stock_value = Medicine.objects.aggregate(Sum('price'))['price__sum'] or 0
 
-    return render(request, 'dashboard.html', {'active_tab': tab, 'customers':customers, 'medicines':medicines, 'suppliers':suppliers, 'purchases':purchases, 'sales':sales})
+    return render(request, 'dashboard.html', {'active_tab': tab, 'customers':customers, 'medicines':medicines, 'suppliers':suppliers, 'purchases':purchases, 'sales':sales,'medicines_count': medicines_count,
+        'expired_medicines': medicines_expiring_soon,
+        'total_quantity_in_stock': total_quantity_in_stock,
+        'total_stock_value': total_stock_value,})
 
