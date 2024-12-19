@@ -4,7 +4,7 @@
     <!-- Profile Section -->
     <div class="sidebar-profile">
         <div class="profile-desktop">
-            <img src="{% static 'images/avatar.jpg' %}" alt="User Profile" class="profile-avatar">
+            <img src="{{request.user.profile_picture.url}}" alt="User Profile" class="profile-avatar">
             <div class="profile-info">
                 <span class="username">{{ request.user.username }}</span>
                 <a href="{% url 'logout' %}" class="logout-btn">
