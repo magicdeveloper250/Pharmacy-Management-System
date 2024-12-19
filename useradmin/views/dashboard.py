@@ -5,6 +5,7 @@ from django.db.models import Sum
 
 def index(request):
     tab = request.GET.get('tab', 'dash')  
+    print(request.user.is_pharmacy)
     purchases = Purchase.objects.filter(purchase_date=timezone.now().date()).aggregate(Sum('total_price'))['total_price__sum']
     sales = Sales.objects.filter(sale_date=timezone.now().date()).aggregate(Sum('total_price'))['total_price__sum']
     customers= Customer.objects.count()

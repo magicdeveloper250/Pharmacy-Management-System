@@ -49,44 +49,8 @@
             </div>
 
             <div class="mb-3">
-              <label for="first_name" class="form-label">
-                  First Name
-              </label>
-              <input
-                type="text"
-                id="first_name"
-                name="first_name"
-                class="form-control"
-                placeholder="Enter your first name"
-                value="{{ request.POST.first_name }}"
-                required
-              />
-              {% if errors.first_name %}
-              <div class="text-danger">{{ errors.first_name }}</div>
-              {% endif %}
-            </div>
-
-            <div class="mb-3">
-              <label for="last_name" class="form-label">
-                 Last Name
-              </label>
-              <input
-                type="text"
-                id="last_name"
-                name="last_name"
-                class="form-control"
-                placeholder="Enter your last name"
-                value="{{ request.POST.last_name }}"
-                required
-              />
-              {% if errors.last_name %}
-              <div class="text-danger">{{ errors.last_name }}</div>
-              {% endif %}
-            </div>
-
-            <div class="mb-3">
               <label for="phone_number" class="form-label">
-                </i> Phone Number
+                Phone Number
               </label>
               <input
                 type="text"
@@ -104,7 +68,7 @@
 
             <div class="mb-3">
               <label class="form-label">
-                 </i> Role
+                 Role
               </label><br />
               <div class="form-check form-check-inline">
                 <input
@@ -115,21 +79,74 @@
                   class="form-check-input"
                   {% if request.POST.role == "owner" %} checked {% endif %}
                 />
-                <label for="renter" class="form-check-label">Owner</label>
+                <label for="owner" class="form-check-label">Owner</label>
               </div>
               <div class="form-check form-check-inline">
                 <input
                   type="radio"
                   id="worker"
                   name="role"
-                  value="buyer"
+                  value="worker"
                   class="form-check-input"
-                  {% if request.POST.role == "buyer" %} checked {% endif %}
+                  {% if request.POST.role == "worker" %} checked {% endif %}
                 />
                 <label for="worker" class="form-check-label">Worker</label>
               </div>
               {% if errors.role %}
               <div class="text-danger">{{ errors.role }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Pharmacy Name for Worker (Dropdown) -->
+            <div id="pharmacy_selection" class="mb-3" style="display:none;">
+              <label for="pharmacy_name" class="form-label">
+                Pharmacy Name
+              </label>
+              <select
+                id="pharmacy_name"
+                name="pharmacy_name"
+                class="form-control"
+              >
+                <option value="">Select a pharmacy</option>
+                <!-- Add pharmacy options here -->
+                <option value="Pharmacy1" {% if request.POST.pharmacy_name == "Pharmacy1" %} selected {% endif %}>Pharmacy 1</option>
+                <option value="Pharmacy2" {% if request.POST.pharmacy_name == "Pharmacy2" %} selected {% endif %}>Pharmacy 2</option>
+              </select>
+              {% if errors.pharmacy_name %}
+              <div class="text-danger">{{ errors.pharmacy_name }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Pharmacy Details for Owner (Input Fields) -->
+            <div id="pharmacy_details" class="mb-3" style="display:none;">
+              <label for="pharmacy_name_owner" class="form-label">
+                Pharmacy Name
+              </label>
+              <input
+                type="text"
+                id="pharmacy_name_owner"
+                name="pharmacy_name_owner"
+                class="form-control"
+                placeholder="Enter pharmacy name"
+                value="{{ request.POST.pharmacy_name_owner }}"
+              />
+              {% if errors.pharmacy_name_owner %}
+              <div class="text-danger">{{ errors.pharmacy_name_owner }}</div>
+              {% endif %}
+              
+              <label for="pharmacy_address" class="form-label">
+                Pharmacy Address
+              </label>
+              <input
+                type="text"
+                id="pharmacy_address"
+                name="pharmacy_address"
+                class="form-control"
+                placeholder="Enter pharmacy address"
+                value="{{ request.POST.pharmacy_address }}"
+              />
+              {% if errors.pharmacy_address %}
+              <div class="text-danger">{{ errors.pharmacy_address }}</div>
               {% endif %}
             </div>
 
@@ -200,4 +217,25 @@
     </div>
   </div>
 </div>
+
+{% block extra_js %}
+<script>
+  $(document).ready(function () {
+    // Show or hide pharmacy selection (for workers) and pharmacy details input (for owners)
+    $('input[name="role"]').on('change', function () {
+      if ($('#worker').is(':checked')) {
+        $('#pharmacy_selection').show();
+        $('#pharmacy_details').hide();
+      } else if ($('#owner').is(':checked')) {
+        $('#pharmacy_selection').hide();
+        $('#pharmacy_details').show();
+      }
+    });
+
+    // Trigger change event on page load to initialize
+    $('input[name="role"]:checked').trigger('change');
+  });
+</script>
+{% endblock %}
+
 {% endblock %}

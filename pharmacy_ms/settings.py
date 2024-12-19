@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ["pharmacy-management-system-yqms.onrender.com", '127.0.0.1']
 
 
 # Application definition
-AUTH_USER_MODEL = "authentication.User"
+AUTH_USER_MODEL = "authentication.Pharmacy"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -75,7 +75,7 @@ TEMPLATES = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    "authentication.backends.UsernameOrEmailBackend",
+    "authentication.backends.PharmacyAuthBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
