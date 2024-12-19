@@ -109,24 +109,24 @@
               <div class="form-check form-check-inline">
                 <input
                   type="radio"
-                  id="renter"
+                  id="owner"
                   name="role"
-                  value="renter"
+                  value="owner"
                   class="form-check-input"
-                  {% if request.POST.role == "renter" %} checked {% endif %}
+                  {% if request.POST.role == "owner" %} checked {% endif %}
                 />
-                <label for="renter" class="form-check-label">Renter</label>
+                <label for="renter" class="form-check-label">Owner</label>
               </div>
               <div class="form-check form-check-inline">
                 <input
                   type="radio"
-                  id="buyer"
+                  id="worker"
                   name="role"
                   value="buyer"
                   class="form-check-input"
                   {% if request.POST.role == "buyer" %} checked {% endif %}
                 />
-                <label for="buyer" class="form-check-label">Buyer</label>
+                <label for="worker" class="form-check-label">Worker</label>
               </div>
               {% if errors.role %}
               <div class="text-danger">{{ errors.role }}</div>

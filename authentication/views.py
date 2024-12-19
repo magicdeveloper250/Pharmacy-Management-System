@@ -80,7 +80,6 @@ def login_user(request):
             return redirect(next_page)
         else:
             messages.error(request, "Username or password is incorrect")
-    print(next_page)
     return render(request, "login.html", context={"next":next_page})
 
 def logout_user(request):

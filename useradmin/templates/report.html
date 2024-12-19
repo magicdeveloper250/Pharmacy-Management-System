@@ -1,0 +1,34 @@
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h6 class="mb-1">{{ report_type }} Report</h6>
+                <small class="text-muted">{{ start_date|date:"Y-m-d" }} to {{ end_date|date:"Y-m-d" }}</small>
+            </div>
+            <div class="text-end">
+                <h5 class="mb-1">Total: {{ total_amount|floatformat:2 }} RWF</h5>
+                <small class="text-muted">Average: {{ average_amount|floatformat:2 }} RWF</small>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th class="text-end">Amount (RWF)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in data %}
+                    <tr>
+                        <td>{{ item.date|date:"Y-m-d" }}</td>
+                        <td class="text-end">{{ item.amount|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

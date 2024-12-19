@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  dashboard, medicine, customer, supplier, purchase, sales
+from .views import  dashboard, medicine, customer, supplier, purchase, sales, report
 
 urlpatterns = [
     path("", dashboard.index, name="admin_dash"),
@@ -35,5 +35,7 @@ urlpatterns = [
     path('get_sale/', sales.get_sale, name='get_sale'),
     path('get_cart/', sales.get_cart, name='get_cart'),
     path('get_perscription/', sales.get_perscription, name='get_perscription'),
+    path('generate-report/', report.generate_report, name='generate_report'),
+  
 
 ]

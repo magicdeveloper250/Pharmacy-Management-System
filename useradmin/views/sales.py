@@ -55,11 +55,14 @@ def add_sale(request):
             cart= cart,
             total_price=data.get("totalPrice"),
         )
-        receipt_content = generate_receipt(sale)
+        scheme = request.scheme   
+        host = request.get_host()   
+        invoice_link=f"{scheme}://{host}/invoices/{sale.id}"
+        receipt_content = generate_receipt(sale, invoice_link)
         sale.receipt.save(f"receipt_{sale.id}.pdf", receipt_content)
         sales = list(Sales.objects.all())
         sales = [ sale.to_json() for sale in sales]
-        return JsonResponse({'status': 'success', 'message': 'Sales added successfully!', 'sales': sales})
+        return JsonResponse({'status': 'success', 'message': 'Sales added successfully!', 'sales': sales,"invoice": invoice_link}, )
     except Exception as e:
         print(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

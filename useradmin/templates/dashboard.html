@@ -114,40 +114,58 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="reportModalLabel">Select Time Frame</h5>
+                <h5 class="modal-title" id="reportModalLabel">Generate Report</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="reportForm">
-                    <div class="mb-3">
-                        <label for="startDate" class="form-label">From:</label>
-                        <input type="text" class="form-control" id="startDate" name="start_date">
+                    {% csrf_token %}
+                    <input type="hidden" id="reportType" name="report_type">
+                    <input type="hidden" id="periodType" name="period" value="today">
+                    
+                    <div class="btn-group w-100 mb-4" role="group">
+                        <button type="button" class="btn btn-outline-primary period-filter active" data-period="today">Today</button>
+                        <button type="button" class="btn btn-outline-primary period-filter" data-period="week">This Week</button>
+                        <button type="button" class="btn btn-outline-primary period-filter" data-period="month">This Month</button>
+                        <button type="button" class="btn btn-outline-primary period-filter" data-period="custom">Custom</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="endDate" class="form-label">To:</label>
-                        <input type="text" class="form-control" id="endDate" name="end_date">
+
+                    <div id="customDateRange" class="row g-3" style="display: none;">
+                        <div class="col-md-6">
+                            <label for="startDate" class="form-label">From Date:</label>
+                            <input type="text" class="form-control datepicker" id="startDate" name="start_date">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="endDate" class="form-label">To Date:</label>
+                            <input type="text" class="form-control datepicker" id="endDate" name="end_date">
+                        </div>
                     </div>
-                 
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-print"></i> Generate
-                    </button>
+
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-file-export"></i> Generate Report
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
  
-<div class="modal fade" id="reportDetailsModal" tabindex="-1" aria-labelledby="reportDetailsModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="reportDataModal" tabindex="-1" aria-labelledby="reportDataLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="reportDetailsModalLabel">Report Details</h5>
+                <h5 class="modal-title" id="reportDataLabel">Report Data</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div id="reportData">
+                    <!-- Dynamic report content will be inserted here -->
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -155,54 +173,96 @@
 
 
 <script>
-    $(document).ready(function() {
-    $(".report-card-gen").on("click", function() {
-       let reportType = $(this).find("h6").text().toLowerCase().includes('Sales') ? "sales" : "purchases";
-        $("#reportType").val(reportType);  
-        $("#reportModal").modal('show'); 
+   $(document).ready(function () {
+    $(".datepicker").datepicker({
+        dateFormat: "yy-mm-dd",
+        changeMonth: true,
+        changeYear: true,
     });
 
-    $("#reportForm").submit(function(event) {
-        event.preventDefault();  
+    $(".period-filter").click(function () {
+        $(".period-filter").removeClass("active");
+        $(this).addClass("active");
 
-       let startDate = $("#startDate").val();
-       let endDate = $("#endDate").val();
-       let reportType = $("#reportType").val();
+        const period = $(this).data("period");
+        $("#periodType").val(period);
+
+        const today = new Date();
+        let startDate = new Date();
+        let endDate = new Date();
+
+        if (period === "custom") {
+            $("#customDateRange").slideDown();
+            return;
+        } else {
+            $("#customDateRange").slideUp();
+        }
+
+        switch (period) {
+            case "today":
+                break;
+            case "week":
+                startDate.setDate(today.getDate() - 7);
+                break;
+            case "month":
+                startDate.setMonth(today.getMonth() - 1);
+                break;
+        }
+
+        $("#startDate").val(formatDate(startDate));
+        $("#endDate").val(formatDate(endDate));
+    });
+
+    $(".report-card-gen").click(function () {
+        const reportTitle = $(this).find("h6").text().toLowerCase();
+        const reportType = reportTitle.includes("sales") ? "sales" : "purchases";
+
+        $("#reportType").val(reportType);
+        $("#reportModal").modal("show");
+    });
+
+    $("#reportForm").submit(function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+
         $.ajax({
-            url: "{% url 'medicine' %}",  
-            type: "GET",
-            data: {
-                start_date: startDate,
-                end_date: endDate,
-                report_type: reportType
-            },
-            success: function(response) {
+            url: "{% url 'generate_report' %}",
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
                 if (response.success) {
-                   let reportHtml = "<h5>Report for " + reportType.charAt(0).toUpperCase() + reportType.slice(1) + "</h5>";
-                    reportHtml += "<pre>" + JSON.stringify(response.report_data, null, 2) + "</pre>"; 
-                    $("#reportData").html(reportHtml);  
-                    $("#reportDetailsModal").modal('show');  
+                    $("#reportModal").modal("hide");
+
+                    const reportType = $("#reportType").val();
+                    const reportHtml = `
+                        <h5>${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report</h5>
+                        <p>Period: ${response.period}</p>
+                        <div class="table-responsive">${response.report_html}</div>
+                    `;
+
+                    $("#reportData").html(reportHtml);
+                    $("#reportDataModal").modal("show");
                 } else {
-                    showToast("There was an error generating the report.", "danger");
+                    alert(response.message || "Error generating report");
                 }
             },
-            error: function() {
-                showToast("There was an error processing your request.", "danger");
-            }
+            error: function () {
+                alert("Failed to generate report. Please try again.");
+            },
         });
-
-        $("#reportModal").modal('hide');
     });
 
-    $( function() {
-        $( "#startDate" ).datepicker({
-            dateFormat: "yy-mm-dd"  
-        });
-        $( "#endDate" ).datepicker({
-            dateFormat: "yy-mm-dd"  
-        });
-    } );
+    function formatDate(date) {
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd}`;
+    }
 });
+
 
 </script>
 {% endblock %}
