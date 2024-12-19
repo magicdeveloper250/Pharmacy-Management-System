@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 from ..models import Sales
 from django.http import FileResponse, HttpResponse
-
+from django.contrib.auth.decorators import login_not_required
+@login_not_required
 @require_http_methods(["GET"])
 def invoice(request,sale_id):
     try:
