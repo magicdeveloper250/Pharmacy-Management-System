@@ -4,11 +4,19 @@ from ..models import Supplier
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
+from ..decorators import (
+    pharmacy_permission_required,
+    admin_required,
+    superadmin_required,
+    staff_required
+)
 
+@pharmacy_permission_required('authentication.view_suppliers')
 @require_http_methods(["GET"])
 def index(request):
     return render(request, "supplier.html")
 
+@pharmacy_permission_required('authentication.manage_suppliers')
 @csrf_exempt
 @require_http_methods(["POST"])
 def add_supplier(request):
@@ -39,7 +47,8 @@ def add_supplier(request):
     except Exception as e:
         print(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
+    
+@pharmacy_permission_required('authentication.manage_suppliers')
 @csrf_exempt
 @require_http_methods(["PUT"])
 def update_supplier(request):
@@ -74,7 +83,9 @@ def update_supplier(request):
 
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    
 
+@pharmacy_permission_required('authentication.manage_suppliers')
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def delete_supplier(request):
@@ -94,13 +105,15 @@ def delete_supplier(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+@pharmacy_permission_required('authentication.view_suppliers')
 def get_suppliers(request):
     if request.method == 'GET':
         suppliers = list(Supplier.objects.values())
         return JsonResponse({'status': 'success', 'suppliers': suppliers})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
-
+    
+@pharmacy_permission_required('authentication.view_suppliers')
 def get_supplier(request):
     supplier_id = request.GET.get('id')
     try:

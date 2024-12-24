@@ -2,10 +2,16 @@ from django.shortcuts import render
 from ..models import *
 from django.utils import timezone
 from django.db.models import Sum
+from ..decorators import (
+    pharmacy_permission_required,
+    admin_required,
+    superadmin_required,
+    staff_required
+)
 
+@staff_required
 def index(request):
     tab = request.GET.get('tab', 'dash')  
-    print(request.user.is_pharmacy)
     purchases = Purchase.objects.filter(purchase_date=timezone.now().date()).aggregate(Sum('total_price'))['total_price__sum']
     sales = Sales.objects.filter(sale_date=timezone.now().date()).aggregate(Sum('total_price'))['total_price__sum']
     customers= Customer.objects.count()

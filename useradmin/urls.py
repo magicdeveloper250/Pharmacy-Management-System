@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  dashboard, medicine, customer, supplier, purchase, sales, report
+from .views import  dashboard, medicine, customer, supplier, purchase, sales, report, users, settings, pharmacy
 
 urlpatterns = [
     path("", dashboard.index, name="admin_dash"),
@@ -36,6 +36,21 @@ urlpatterns = [
     path('get_cart/', sales.get_cart, name='get_cart'),
     path('get_perscription/', sales.get_perscription, name='get_perscription'),
     path('generate-report/', report.generate_report, name='generate_report'),
-  
-
+    path('users-index/', users.users, name='users-index'),
+    path('users/', users.user_list, name='users'),
+    path('get_user/', users.get_user, name='get_user'),
+    path('update_user/', users.update_user, name='update_user'),
+    path('delete_user/', users.delete_user, name='delete_user'),
+    path('settings-index/', settings.index, name='settings-index'),
+    path('settings/', settings.get_settings, name='settings'),
+    path('get_settings/', settings.get_settings, name='get_settings'),
+    path('add_setting/', settings.add_settings, name='add_settings'),
+    path('update_setting/', settings.update_settings, name='update_settings'),
+    path('delete_aetting/', settings.delete_settings, name='delete_settings'),
+    path("pharmacy/", pharmacy.index, name="pharmacy"),
+    path("add_pharmacy/", pharmacy.add_pharmacy, name="add_pharmacy"),
+    path('update_pharmacy/', pharmacy.update_pharmacy, name='update_pharmacy'),
+    path('delete_pharmacy/', pharmacy.delete_pharmacy, name='delete_pharmacy'),
+    path('get_pharmacies/', pharmacy.get_pharmacies, name='get_pharmacies'),
+    path('get_pharmacy/', pharmacy.get_pharmacy, name='get_pharmacy'),
 ]

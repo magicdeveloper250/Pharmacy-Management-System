@@ -5,18 +5,17 @@
     <div class="container mt-0">
         <div class="medecine-header">
             <div >
-                <h3><i class="fa fa-pills fa-lg"></i> Medicine Management</h3>
+                <h3 class="display-6"><i class="fa fa-pills me-2"></i> Medicine Management</h3>
             </div>
             <div>
                 <button class="btn btn-outline-secondary table-show-btn" > <i class="fa fa-table"></i></button>
                 <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
-                <a href="{%url 'admin_dash'%}"  class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
+                <a  onclick="window.history.back()"   class="btn btn-outline-secondary"> <i class="fa fa-close"></i></a>
             </div>
         </div>
 
-        <div class="row" style="display: flex; flex-direction: column; height: 90vh;">
+        <div class="row" style="display: flex; flex-direction: column; height: 100vh;">
             {%include 'medicine_form.html'%}
-            <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
             {%include 'medicine_table.html'%}
         </div>
 
@@ -45,7 +44,7 @@
                                     <td><b>Batch Number</b>${medicine.batch_number}</td>
                                     <td><b>Quantity in Stock</b>${medicine.quantity_in_stock}</td>
                                     <td class="currency-display" data-rwf="${medicine.price}"> <b>Price</b>${formattedPrice(medicine.price)}</td>
-                                    <td><b>Action</b><button class="btn btn-outline-danger delete-btn border-0" data-id="${medicine.id}"><i class="fa fa-trash fa-sm"></i> Delete</button></td>
+                                    <td><b>Action</b><button class="btn btn-outline-danger delete-btn btn-sm" data-id="${medicine.id}"><i class="fa fa-trash fa-sm"></i></button></td>
                                 </tr>`
                     });
                     $("#medicine-table > tbody").html(el);
@@ -193,16 +192,7 @@
             function submitForm() {
                 $('#medicineForm').submit();
             }
-            $( function() {
-                $( "#expiration_date" ).datepicker({
-                    dateFormat: "yy-mm-dd"  
-                });
-            } );
-
-            // $("#quantity_in_stock").spinner({
-            //     numberFormat: "n", 
-            //     min: 0  
-            // });
+        
 
             $("#quantity_in_stock").on("input", function () {
                 if ($(this).val() < 0) {

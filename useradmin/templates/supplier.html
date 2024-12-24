@@ -5,18 +5,17 @@
     <div class="container mt-0">
         <div class="supplier-header">
             <div>
-                <h3><i class="fa fa-truck fa-lg"></i> Supplier Management</h3>
+                <h3 class="display-6"><i class="fa fa-truck me-2"></i> Supplier Management</h3>
             </div>
             <div  >
                 <button class="btn btn-outline-secondary table-show-btn" > <i class="fa fa-table"></i></button>
                 <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
-                <a href="{% url 'admin_dash' %}" class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
+                <a  onclick="window.history.back()" class="btn btn-outline-secondary"> <i class="fa fa-close"></i></a>
             </div>
         </div>
 
-        <div class="row" style="display: flex; flex-direction: column;">
+        <div class="row" style="display: flex; flex-direction: column;height: 100vh;">
             {% include 'supplier_form.html' %}
-            <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
             {% include 'supplier_table.html' %}
         </div>
 
@@ -47,8 +46,8 @@
                                     <td><b>Address</b>${supplier.address}</td>
                                     <td><b>Lead Time</b>${supplier.lead_time} days</td>
                                     <td><b>Action</b>
-                                        <button class="btn btn-outline-danger delete-btn border-0" data-id="${supplier.id}">
-                                            <i class="fa fa-trash fa-sm"></i> Delete
+                                        <button class="btn btn-outline-danger delete-btn btn-sm" data-id="${supplier.id}">
+                                            <i class="fa fa-trash fa-sm"></i>
                                         </button>
                                     </td>
                                 </tr>`;

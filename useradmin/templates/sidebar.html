@@ -73,6 +73,21 @@
                     <span>Sales Management</span>
                 </a>
             </li>
+            {% if request.user.is_admin%}
+            <li class="nav-item {% if active_tab == 'users' %}active{% endif %}">
+                <a href="{% url 'users-index' %}?tab=users">
+                    <i class="fas fa-shield"></i>
+                    <span>Users Management</span>
+                </a>
+            </li>
+            <li class="nav-item {% if active_tab == 'settings' %}active{% endif %}">
+                <a href="{% url 'settings-index' %}?tab=settings">
+                    <i class="fas fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            {%endif%}
+            
         </ul>
     </nav>
 </aside>

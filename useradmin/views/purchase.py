@@ -4,14 +4,21 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
+from ..decorators import (
+    pharmacy_permission_required,
+    admin_required,
+    superadmin_required,
+    staff_required
+)
 
+@pharmacy_permission_required('authentication.view_purchases')
 @require_http_methods(["GET"])
 def index(request):
     medicines= Medicine.objects.all()
     suppliers= Supplier.objects.all()
     return render(request, "purchase.html", {"suppliers":suppliers, "medicines":medicines})
 
-
+@pharmacy_permission_required('authentication.manage_purchases')
 @csrf_exempt
 @require_http_methods(["POST"])
 def add_purchase(request):
@@ -42,7 +49,7 @@ def add_purchase(request):
         print(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-
+@pharmacy_permission_required('authentication.manage_purchases')
 @csrf_exempt
 @require_http_methods(["PUT"])
 def update_purchase(request):
@@ -82,7 +89,7 @@ def update_purchase(request):
         print(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-
+@pharmacy_permission_required('authentication.manage_purchases')
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def delete_purchase(request):
@@ -108,7 +115,7 @@ def delete_purchase(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
-
+@pharmacy_permission_required('authentication.view_purchases')
 def get_purchases(request):
     if request.method == 'GET':
         purchases = list(Purchase.objects.all())
@@ -125,7 +132,7 @@ def get_purchases(request):
         return JsonResponse({'status': 'success', 'purchases': purchases})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
-
+@pharmacy_permission_required('authentication.view_purchases')
 def get_purchase(request):
     purchase_id = request.GET.get('id')
     try:

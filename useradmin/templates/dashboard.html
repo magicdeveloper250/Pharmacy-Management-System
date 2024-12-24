@@ -3,149 +3,206 @@
 
 {% block main_content %}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-<div class="container mt-0">
-    <div class="row mb-3">
+<div class="container-fluid px-4 mt-0">
+    <div class="row mb-4 align-items-center">
         <div class="col-md-6">
-            <h1><i class="fas fa-home"></i> Dashboard</h1>
+            <h3 class="display-6">
+                <i class="fas fa-home me-2"></i>Dashboard
+            </h3>
         </div>
-        
     </div>
 
-    <!-- Statistics Section -->
-    <div class="row g-3">
+    <div class="row g-4 mb-5">
         <div class="col-md-3">
-            <div class="card card-statistics">
-                <i class="fas fa-users card-icon text-warning"></i>
-                <div>
-                    <h5>{{customers}}</h5>
-                    <p>Total Customers</p>
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-users fa-lg text-primary"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-1 fw-bold">{{customers}}</h3>
+                            <p class="text-muted mb-0">Total Customers</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-md-3">
-            <div class="card card-statistics">
-                <i class="fas fa-truck card-icon text-warning"></i>
-                <div>
-                    <h5>{{suppliers}}</h5>
-                    <p>Total Suppliers</p>
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-truck fa-lg text-success"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-1 fw-bold">{{suppliers}}</h3>
+                            <p class="text-muted mb-0">Total Suppliers</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-md-3">
-            <div class="card card-statistics">
-                <i class="fas fa-pills card-icon text-warning"></i>
-                <div>
-                    <h5>{{medicines}}</h5>
-                    <p>Total Medicines</p>
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                            <i class="fas fa-pills fa-lg text-warning"></i>
+                        </div>
+                        <div>
+                            <h3 class="mb-1 fw-bold">{{medicines}}</h3>
+                            <p class="text-muted mb-0">Total Medicines</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="col-md-3">
-            <div class="report-card">
-                <h5>Today's Report</h5>
-                <table class="table table-bordered">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-2">
+                    <h5 class="card-title mb-3">Today's Report</h5>
+                    <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                            <tbody>
+                                <tr>
+                                    <td class="text-muted">Sales</td>
+                                    <td class="text-start">
+                                        <span class="text-success currency-display" data-rwf="{{sales}}">{{sales}}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Purchases</td>
+                                    <td class="text-start">
+                                        <span class="text-danger currency-display" data-rwf="{{purchases}}">{{purchases}}</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-5">
+        <div class="card-body p-4">
+            <h5 class="card-title mb-4">Medicines Expiring Soon</h5>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Batch Number</th>
+                            <th>Expiry Date</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        <tr>
-                            <td>Total Sales</td>
-                            <td><span class="text-success currency-display" data-rwf="{{sales}}" >{{sales}}</span></td>
-                        </tr>
-                        <tr>
-                            <td>Total Purchases</td>
-                            <td><span class="text-danger currency-display" data-rwf="{{purchases}}">{{purchases}}</span></td>
-                        </tr>
+                        {% if expired_medicines %}
+                            {% for medicine in expired_medicines %}
+                                <tr>
+                                    <td>{{ medicine.name }}</td>
+                                    <td><span class="badge bg-light text-dark">{{ medicine.batch_number }}</span></td>
+                                    <td>{{ medicine.expiration_date }}</td>
+                                    <td>{{ medicine.quantity_in_stock }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">No medicines are expiring today.</td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
         </div>
-        <!-- Expiring Medicines Table -->
-        <div class="report-card">
-            <h5>Medicines Expiring Today</h5>
-            <table class="table table-bordered">
-                <thead class="table-light">
-                    <tr>
-                        <th>Name</th>
-                        <th>Batch Number</th>
-                        <th>Expiry Date</th>
-                        <th>Quantity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if expired_medicines %}
-                        {% for medicine in expired_medicines %}
-                            <tr>
-                                <td>{{ medicine.name }}</td>
-                                <td>{{ medicine.batch_number }}</td>
-                                <td>{{ medicine.expiration_date }}</td>
-                                <td>{{ medicine.quantity_in_stock }}</td>
-                            </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="4" class="text-center">No medicines are expiring today.</td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
     </div>
 
-    </div>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <a href="{% url 'customer' %}?tab=customer" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4 text-center">
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3 mx-auto mb-3" style="width: fit-content;">
+                            <i class="fas fa-user-plus fa-lg text-primary"></i>
+                        </div>
+                        <h6 class="mb-0">Add New Customer</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
 
-    <!-- Action Buttons -->
-    <div class="row mt-4 dashboard-actions g-3">
         <div class="col-md-3">
-            <a href="{% url 'customer' %}?tab=customer">
-                <div class="card p-3 text-center">
-                    <i class="fas fa-user-plus fa-2x mb-2"></i>
-                    <h6>Add New Customer</h6>
+            <a href="{% url 'medicine' %}?tab=medicine" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4 text-center">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3 mx-auto mb-3" style="width: fit-content;">
+                            <i class="fas fa-pills fa-lg text-success"></i>
+                        </div>
+                        <h6 class="mb-0">Add New Medicine</h6>
+                    </div>
                 </div>
             </a>
         </div>
+
         <div class="col-md-3">
-            <a href="{% url 'medicine' %}?tab=medicine">
-                <div class="card p-3 text-center">
-                    <i class="fas fa-pills fa-2x mb-2"></i>
-                    <h6>Add New Medicine</h6>
+            <a href="{% url 'supplier' %}?tab=supplier" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4 text-center">
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3 mx-auto mb-3" style="width: fit-content;">
+                            <i class="fas fa-handshake fa-lg text-warning"></i>
+                        </div>
+                        <h6 class="mb-0">Add New Supplier</h6>
+                    </div>
                 </div>
             </a>
         </div>
+
         <div class="col-md-3">
-            <a href="{% url 'supplier' %}?tab=supplier">
-                <div class="card p-3 text-center">
-                    <i class="fas fa-handshake fa-2x mb-2"></i>
-                    <h6>Add New Supplier</h6>
+            <a href="{% url 'purchase' %}?tab=purchase" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4 text-center">
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3 mx-auto mb-3" style="width: fit-content;">
+                            <i class="fas fa-chart-bar fa-lg text-info"></i>
+                        </div>
+                        <h6 class="mb-0">Add New Purchase</h6>
+                    </div>
                 </div>
             </a>
         </div>
-        
+
         <div class="col-md-3">
-            <a href="{% url 'purchase' %}?tab=purchase">
-                <div class="card p-3 text-center">
-                    <i class="fas fa-chart-bar fa-2x mb-2"></i>
-                    <h6>Add New Purchase</h6>
+            <div class="card h-100 border-0 shadow-sm hover-lift report-card-gen">
+                <div class="card-body p-4 text-center">
+                    <div class="rounded-circle bg-secondary bg-opacity-10 p-3 mx-auto mb-3" style="width: fit-content;">
+                        <i class="fas fa-file-alt fa-lg text-secondary"></i>
+                    </div>
+                    <h6 class="mb-0">Sales Report</h6>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-3 report-card-gen">
-            <div class="card p-3 text-center">
-                <i class="fas fa-file-alt fa-2x mb-2"></i>
-                <h6>Sales Report</h6>
             </div>
         </div>
-        <div class="col-md-3 report-card-gen" >
-            <div class="card p-3 text-center">
-                <i class="fas fa-file-alt fa-2x mb-2"></i>
-                <h6>Purchase Report</h6>
+
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm hover-lift report-card-gen">
+                <div class="card-body p-4 text-center">
+                    <div class="rounded-circle bg-secondary bg-opacity-10 p-3 mx-auto mb-3" style="width: fit-content;">
+                        <i class="fas fa-file-alt fa-lg text-secondary"></i>
+                    </div>
+                    <h6 class="mb-0">Purchase Report</h6>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-
 <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0">
                 <h5 class="modal-title" id="reportModalLabel">Generate Report</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -164,18 +221,18 @@
 
                     <div id="customDateRange" class="row g-3" style="display: none;">
                         <div class="col-md-6">
-                            <label for="startDate" class="form-label">From Date:</label>
-                            <input type="date" class="form-control datepicker" id="startDate" name="start_date">
+                            <label for="startDate" class="form-label">From Date</label>
+                            <input type="date" class="form-control" id="startDate" name="start_date">
                         </div>
                         <div class="col-md-6">
-                            <label for="endDate" class="form-label">To Date:</label>
-                            <input type="date" class="form-control datepicker" id="endDate" name="end_date">
+                            <label for="endDate" class="form-label">To Date</label>
+                            <input type="date" class="form-control" id="endDate" name="end_date">
                         </div>
                     </div>
 
                     <div class="text-end mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-file-export"></i> Generate Report
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-file-export me-2"></i>Generate Report
                         </button>
                     </div>
                 </form>
@@ -183,29 +240,39 @@
         </div>
     </div>
 </div>
- 
+
 <div class="modal fade" id="reportDataModal" tabindex="-1" aria-labelledby="reportDataLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom-0">
                 <h5 class="modal-title" id="reportDataLabel">Report Data</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div id="reportData">
-                    <!-- Dynamic report content will be inserted here -->
+                <div id="reportData" class="px-3">
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-primary" id="printReportBtn">
+                    <i class="fas fa-print me-2"></i>Print
+                </button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
-
 <script>
-   $(document).ready(function () {
+$(document).ready(function () {
+    $("#printReportBtn").click(function () {
+        const printContent = document.getElementById('reportData').innerHTML;
+        const originalContent = document.body.innerHTML;
+        document.body.innerHTML = printContent;
+        window.print();
+        document.body.innerHTML = originalContent;
+        location.reload();
+    });
+
     $(".datepicker").datepicker({
         dateFormat: "yy-mm-dd",
         changeMonth: true,
@@ -255,7 +322,6 @@
 
     $("#reportForm").submit(function (e) {
         e.preventDefault();
-
         const formData = new FormData(this);
 
         $.ajax({
@@ -270,20 +336,24 @@
 
                     const reportType = $("#reportType").val();
                     const reportHtml = `
-                        <h5>${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report</h5>
-                        <p>Period: ${response.period}</p>
-                        <div class="table-responsive">${response.report_html}</div>
+                        <div class="report-header mb-4">
+                            <h5 class="text-primary mb-2">${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report</h5>
+                            <p class="text-muted">Period: ${response.period}</p>
+                        </div>
+                        <div class="table-responsive">
+                            ${response.report_html}
+                        </div>
                     `;
 
                     $("#reportData").html(reportHtml);
                     $("#reportDataModal").modal("show");
                 } else {
-                    alert(response.message || "Error generating report");
+                    showToast(response.message || "Error generating report", "danger");
                 }
             },
-            error: function () {
-                alert("Failed to generate report. Please try again.");
-            },
+            error: function (xhr, status, error) {
+                showToast('An error occurred: ' + error, "danger");
+            }
         });
     });
 
@@ -293,8 +363,12 @@
         const dd = String(date.getDate()).padStart(2, "0");
         return `${yyyy}-${mm}-${dd}`;
     }
+
+
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
 });
-
-
 </script>
 {% endblock %}

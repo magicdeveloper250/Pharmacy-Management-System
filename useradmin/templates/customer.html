@@ -5,18 +5,17 @@
     <div class="container mt-0">
         <div  class="customer-header">
             <div>
-                <h3><i class="fa fa-users fa-lg"></i> Customer Management</h3>
+                <h3 class="display-6"><i class="fa fa-users me-2"></i> Customer Management</h3>
             </div>
             <div>
                 <button class="btn btn-outline-secondary table-show-btn" > <i class="fa fa-table"></i></button>
                 <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
-                <a href="{% url 'admin_dash' %}" class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
+                <a  onclick="window.history.back()"  class="btn btn-outline-secondary"> <i class="fa fa-close"></i></a>
             </div>
         </div>
 
-        <div class="row" style="display: flex; flex-direction: column; height: 90vh;">
+        <div class="row" style="display: flex; flex-direction: column; height: 100vh;">
             {% include 'customer_form.html' %}
-            <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
             {% include 'customer_table.html' %}
         </div>
 
@@ -46,8 +45,8 @@
                                     <td><b>Address</b>${customer.address}</td>
                                     <td><b>Allergies</b>${customer.allergies || "None"}</td>
                                     <td><b>Action</b>
-                                        <button class="btn btn-outline-danger delete-btn border-0" data-id="${customer.id}">
-                                            <i class="fa fa-trash fa-sm"></i> Delete
+                                        <button class="btn btn-outline-danger delete-btn btn-sm" data-id="${customer.id}">
+                                            <i class="fa fa-trash fa-sm"></i>
                                         </button>
                                     </td>
                                 </tr>`;
@@ -130,7 +129,6 @@
                     showToast('Error occurred while fetching customers.', "danger");
                 });
 
-                // Form submission for add/update customer
                 $('#customerForm').on('submit', function (event) {
                     event.preventDefault();
 
@@ -187,9 +185,7 @@
                 $('#customerForm').submit();
             }
 
-            $( "#date_of_birth" ).datepicker({
-            dateFormat: "yy-mm-dd"  
-            });
+           
         </script>
     </div>
 {% endblock %}

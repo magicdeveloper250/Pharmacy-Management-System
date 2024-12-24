@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from .utils import *
-from .models import Pharmacy, PasswordResetToken
+from .models import Pharmacy,PharmacyUser, PasswordResetToken
 from django.db import IntegrityError
 import base64
 from django.contrib.auth.decorators import login_not_required
@@ -14,15 +14,18 @@ def auth_index(request):
 @login_not_required
 def register_pharmacy(request):
     errors = {}
+    pharmacies= Pharmacy.objects.all()
     if request.method == "POST":
         email = request.POST.get("email", "")
         username = request.POST.get("username", "")
-        pharmacy_name = request.POST.get("pharmacy_name", "")
         phone_number = request.POST.get("phone_number", "")
         password = request.POST.get("password", "")
         confirm_password = request.POST.get("confirm_password", "")
         profile_picture = request.FILES.get("profile_picture", None)
-
+        role = request.POST.get("role")
+        pharmacy_name = request.POST.get("pharmacy_name", "")
+        pharmacy_id = request.POST.get("pharmacy_id", "")
+        pharmacy_address = request.POST.get("pharmacy_address", "")
         validation_results = [
             validate_email(email),
             validate_username(username),
@@ -32,45 +35,70 @@ def register_pharmacy(request):
             validate_profile_picture(profile_picture),
         ]
         errors = filter_validation_errors(validation_results)
-
+       
         if not errors:
             try:
-                pharmacy = Pharmacy.objects.create_user(
+                if role=='owner':
+                    pharmacy=Pharmacy.objects.create(pharmacy_name=pharmacy_name,address=pharmacy_address )
+                    PharmacyUser.objects.create_superuser(
+                        email=email,
+                        username=username,
+                        pharmacy=pharmacy,
+                        phone_number=phone_number,
+                        password=password,
+                        profile_picture=profile_picture,
+                    )
+                    messages.success(request, "New pharmacy account created successfully")
+                     
+                else:
+                    pharmacy= Pharmacy.objects.get(id= pharmacy_id)
+                    PharmacyUser.objects.create_user(
                     username=username,
                     email=email,
-                    pharmacy_name=pharmacy_name,
-                    profile_picture=profile_picture,
+                    pharmacy=pharmacy,
                     phone_number=phone_number,
                     password=password,
+                    profile_picture=profile_picture,
                 )
-                pharmacy.save()
-                messages.success(request, "New pharmacy account created successfully")
+                    messages.success(request, "New account created successfully")
+                    print("New account created successfully")
+                
                 return redirect("login")
             except IntegrityError as e:
                 error_message = str(e)
-                if "authentication_pharmacy_email_key" in error_message:
+                if "email" in error_message:
                     errors["email"] = "Email already taken."
-                elif "authentication_pharmacy_username_key" in error_message:
+                elif "username" in error_message:
                     errors["username"] = "Username already taken."
-                elif "authentication_pharmacy_phone_number_key" in error_message:
+                elif "phone_number" in error_message:
                     errors["phone_number"] = "Phone number already taken."
             except Exception as e:
+                print(e)
                 messages.error(request, str(e))
 
-    return render(request, "register.html", context={"errors": errors})
+    return render(request, "register.html", context={"errors": errors, "pharmacies":pharmacies})
 
 @login_not_required
 def login_pharmacy(request):
-    next_page = request.GET.get('next', 'dashboard')   
+    next_page = request.GET.get('next', 'admin_dash')   
     
     if request.method == "POST":
         username = request.POST.get("identifier")
         password = request.POST.get("password")
         pharmacy = authenticate(username=username, password=password)
         if pharmacy:
-            login(request, pharmacy)
-            messages.success(request, f"Welcome back, {pharmacy.username}!")
-            return redirect(next_page)
+            if pharmacy.is_admin:
+                login(request, pharmacy)
+                messages.success(request, f"Welcome back, {pharmacy.username}!")
+                return redirect(next_page)
+            else:
+                if pharmacy.is_verified:
+                    login(request, pharmacy)
+                    messages.success(request, f"Welcome back, {pharmacy.username}!")
+                    return redirect(next_page)
+                else:
+                    messages.error(request, "Username or password is incorrect")
+                
         else:
             messages.error(request, "Username or password is incorrect")
     return render(request, "login.html", context={"next": next_page})
@@ -87,7 +115,7 @@ def reset_password_email(request):
         raw_token, hashed_token = generate_random_token()
         try:
             email = request.POST.get("email")
-            pharmacy = Pharmacy.objects.get(email=email)
+            pharmacy = PharmacyUser.objects.get(email=email)
             rst_token, created = PasswordResetToken.objects.get_or_create(user=pharmacy, defaults={"token": hashed_token})
             if not created and (rst_token.token_expired() or not rst_token.is_active):
                 rst_token.token = hashed_token
@@ -100,7 +128,7 @@ def reset_password_email(request):
                 "reset_password", f"reset_password_new_password/{base64_token}/{base64_email}"
             )
             send_email_in_thread(pharmacy.email, reset_url)
-        except Pharmacy.DoesNotExist:
+        except PharmacyUser.DoesNotExist:
             pass
 
     return render(request, "reset_password_email.html")
@@ -111,7 +139,7 @@ def reset_password(request, token, email):
         decoded_token = base64.b64decode(token).decode("utf-8")
         decoded_email = base64.b64decode(email).decode("utf-8")
         errors = {}
-        pharmacy = Pharmacy.objects.get(email=decoded_email)
+        pharmacy = PharmacyUser.objects.get(email=decoded_email)
         rst_token = PasswordResetToken.objects.get(user=pharmacy)
         
         if not verify_token(decoded_token, rst_token.token) or rst_token.token_expired() or not rst_token.is_active:
@@ -130,9 +158,12 @@ def reset_password(request, token, email):
                 rst_token.save()
                 messages.success(request, "Your password was changed successfully")
                 return redirect("login")
-    except (PasswordResetToken.DoesNotExist, Pharmacy.DoesNotExist):
+    except (PasswordResetToken.DoesNotExist, PharmacyUser.DoesNotExist):
         messages.info(request, "Invalid token or token expired")
     except Exception as e:
         messages.error(request, "An unexpected error occurred")
 
     return render(request, "reset_password_new_password.html", context={"token": token, "email": email, "errors": errors})
+
+def forbidden(request):
+    return render(request, "forbidden.html")

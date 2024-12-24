@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 <link rel="stylesheet" href="{% static 'css/purchase_form.css' %}">
 <div class="col-md-12 mb-3" style="overflow-y: auto; flex: 1; margin-bottom: 10px; height: 70vh">
     <form method="POST" action="{% url 'sales' %}" id="salesForm">
@@ -18,10 +19,10 @@
 
             <div class="col-md-6 mb-3">
                 <label for="medicine" class="form-label">Medicine</label>
-                <select class="form-control" id="medicine" name="medicine" required multiple multiselect-search="true">
+                <select class="form-control" id="medicine" name="medicine" required data-placeholder="Select options" multiple="multiple" data-multi-select>
                     {% for medicine in medicines %}
-                        <option value="{{medicine.to_json2}}" data-prescription="{{ medicine.is_prescription_required|yesno:'true,false' }}" data-price="{{ medicine.price }}" data-id="{{ medicine.id }}">
-                            {{ medicine.name }} - RWF {{ medicine.price }}
+                        <option value="{{medicine.to_json2}}" data-prescription="{{ medicine.is_prescription_required|yesno:'true,false' }}" data-price="{{ medicine.price }}" data-id="{{ medicine.id }}" id="{{ medicine.id }}">
+                            {{ medicine.name }} - RWF {{ medicine.price|floatformat:2|intcomma }}
                         </option>
                     {% endfor %}
                 </select>
@@ -40,7 +41,6 @@
    
 </div>
   
-<!-- Modal -->
 <div class="modal fade" id="prescriptionModal" tabindex="-1" aria-labelledby="prescriptionModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -57,7 +57,7 @@
                             </div>
                             <div class="mb-3">
                                 <label for="prescription_date" class="form-label">Prescription Date</label>
-                                <input type="text" class="form-control" id="prescription_date" name="prescription_date">
+                                <input type="date" class="form-control" id="prescription_date" name="prescription_date">
                             </div>
                             <div class="mb-3">
                                 <label for="dosage" class="form-label">Dosage</label>

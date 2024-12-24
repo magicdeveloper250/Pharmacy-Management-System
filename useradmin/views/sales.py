@@ -5,13 +5,20 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
 from .utils import generate_receipt
-
+from ..decorators import (
+    pharmacy_permission_required,
+    admin_required,
+    superadmin_required,
+    staff_required
+)
+@pharmacy_permission_required('authentication.view_sales')
 @require_http_methods(["GET"])
 def index(request):
     medicines = Medicine.objects.all()
     customers = Customer.objects.all()
     return render(request, "sales.html", {"customers": customers, "medicines": medicines})
 
+@pharmacy_permission_required('authentication.manage_sales')
 @csrf_exempt
 @require_http_methods(["POST"])
 def add_sale(request):
@@ -24,8 +31,6 @@ def add_sale(request):
         cart= Cart.objects.create(
             customer= customer
         )
-        
-
         for med in medicines:
             medicine= Medicine.objects.get(id=med.get("id"))
             quantity = med.get('sale_quantity')
@@ -58,7 +63,7 @@ def add_sale(request):
         scheme = request.scheme   
         host = request.get_host()   
         invoice_link=f"{scheme}://{host}/invoices/{sale.id}"
-        receipt_content = generate_receipt(sale, invoice_link)
+        receipt_content = generate_receipt(request,sale, invoice_link)
         sale.receipt.save(f"receipt_{sale.id}.pdf", receipt_content)
         sales = list(Sales.objects.all())
         sales = [ sale.to_json() for sale in sales]
@@ -67,6 +72,7 @@ def add_sale(request):
         print(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+@pharmacy_permission_required('authentication.manage_sales')
 @csrf_exempt
 @require_http_methods(["PUT"])
 def update_sale(request):
@@ -86,7 +92,6 @@ def update_sale(request):
         sale.customer = customer
         sale.total_price = medicine.price * int(quantity)
         sale.save()
-
         medicine.quantity_in_stock -= qty_adjustment
         medicine.save()
 
@@ -97,7 +102,8 @@ def update_sale(request):
         return JsonResponse({'status': 'error', 'message': 'Sales not found.'}, status=404)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
+    
+@pharmacy_permission_required('authentication.manage_sales')
 @csrf_exempt
 @require_http_methods(["DELETE"])
 def delete_sale(request):
@@ -113,9 +119,9 @@ def delete_sale(request):
     except Sales.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Sales not found.'}, status=404)
     except Exception as e:
-        print(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
+@pharmacy_permission_required('authentication.view_sales')
 def get_sales(request):
     if request.method == 'GET':
         sales = list(Sales.objects.all())
@@ -123,6 +129,8 @@ def get_sales(request):
         return JsonResponse({'status': 'success', 'sales': sales})
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 
+
+@pharmacy_permission_required('authentication.view_sales')
 def get_sale(request):
     sale_id = request.GET.get('id')
     try:
@@ -135,7 +143,7 @@ def get_sale(request):
     except Sales.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Sales not found'})
 
-
+@pharmacy_permission_required('authentication.view_sales')
 def get_cart(request):
     cart_id = request.GET.get('id')
     try:
@@ -149,7 +157,8 @@ def get_cart(request):
     except Sales.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'cart not found'})
     
-
+@pharmacy_permission_required('authentication.view_sales')
+@pharmacy_permission_required('authentication.view_prescriptions')
 def get_perscription(request):
     perscription_id = request.GET.get('id')
     try:

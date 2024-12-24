@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import auth_index, register_pharmacy, login_pharmacy, logout_pharmacy, reset_password_email, reset_password
+from .views import auth_index, register_pharmacy, login_pharmacy, logout_pharmacy, reset_password_email, reset_password, forbidden
 
 urlpatterns = [
     path("", auth_index, name="auth_index"),
@@ -8,5 +8,6 @@ urlpatterns = [
     path("logout/", logout_pharmacy, name="logout"),
     path("reset_password", reset_password_email, name="reset_password"),
     path("reset_password_new_password/<str:token>/<str:email>", reset_password, name="new_password"),
+    path("forbidden", forbidden, name="forbidden"),
 
 ]

@@ -5,18 +5,17 @@
     <div class="container mt-0">
         <div class="purchase-header">
             <div>
-                <h3><i class="fa fa-shopping-cart fa-lg"></i> Purchase Management</h3>
+                <h3 class="display-6"><i class="fa fa-shopping-cart me-2"></i> Purchase Management</h3>
             </div>
             <div>
                 <button class="btn btn-outline-secondary table-show-btn" > <i class="fa fa-table"></i></button>
                 <button type="submit" class="btn btn-primary" onclick="submitForm()"> <i class="fa fa-save"></i> Save</button>
-                <a href="{% url 'admin_dash' %}" class="btn btn-secondary"> <i class="fa fa-close"></i> Close</a>
+                <a onclick="window.history.back()"  class="btn btn-outline-secondary"> <i class="fa fa-close"></i></a>
             </div>
         </div>
 
-        <div class="row" style="display: flex; flex-direction: column; height: 90vh;">
+        <div class="row" style="display: flex; flex-direction: column; height: 100vh;">
             {% include 'purchase_form.html' %}
-            <div id="resizer" style="height: 10px; background: #ccc; cursor: row-resize;"></div>
             {% include 'purchase_table.html' %}
         </div>
 
@@ -44,8 +43,8 @@
                                     <td class="currency-display" data-rwf=${purchase.total_price}><b>Total Price</b>${formattedPrice(purchase.total_price)}</td>
                                     <td><b>Purchase Date</b>${purchase.purchase_date}</td>
                                     <td>
-                                        <b>Action</b><button class="btn btn-outline-danger delete-btn border-0" data-id="${purchase.id}">
-                                           <i class="fa fa-trash fa-sm"></i> Delete
+                                        <b>Action</b><button class="btn btn-outline-danger delete-btn btn-sm" data-id="${purchase.id}">
+                                           <i class="fa fa-trash fa-sm"></i>
                                         </button>
                                     </td>
                                 </tr>`;

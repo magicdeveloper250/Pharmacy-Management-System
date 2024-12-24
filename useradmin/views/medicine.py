@@ -4,11 +4,19 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import json
+from ..decorators import (
+    pharmacy_permission_required,
+    admin_required,
+    superadmin_required,
+    staff_required
+)
  
+@pharmacy_permission_required('authentication.view_medicines')
 @require_http_methods(["GET"])
 def index(request):
     return render(request, "medicine.html")
 
+@pharmacy_permission_required('authentication.manage_medicines')
 @csrf_exempt
 @require_http_methods(["POST"])
 def upload_medicine(request):
@@ -53,7 +61,7 @@ def upload_medicine(request):
 
 
  
-
+@pharmacy_permission_required('authentication.manage_medicines')
 @csrf_exempt
 @require_http_methods(["PUT"])  
 def update_medicine(request):
@@ -111,7 +119,7 @@ def update_medicine(request):
         }, status=500)
 
 
-
+@pharmacy_permission_required('authentication.manage_medicines')
 @csrf_exempt
 @require_http_methods(["DELETE"])  
 def delete_medicine(request):
@@ -135,6 +143,8 @@ def delete_medicine(request):
             'message': str(e)
         }, status=500)
     
+
+@pharmacy_permission_required('authentication.view_medicines')  
 def get_medicines(request):
     if request.method == 'GET':
         medicines = list(Medicine.objects.values())
@@ -142,6 +152,7 @@ def get_medicines(request):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
     
+@pharmacy_permission_required('authentication.view_medicines')  
 def get_medicine(request):
     medicine_id = request.GET.get('id')
     try:

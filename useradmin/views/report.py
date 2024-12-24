@@ -5,19 +5,24 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime, timedelta
 from django.db.models import Sum
 from ..models import Sales, Purchase
+from ..decorators import (
+    pharmacy_permission_required,
+    admin_required,
+    superadmin_required,
+    staff_required
+)
+from django.views.decorators.http import require_http_methods
 
-@login_required
-@require_POST
+@pharmacy_permission_required('authentication.view_reports')
+@require_http_methods(["POST"])
 def generate_report(request):
     try:
         report_type = request.POST.get('report_type')
         period_type = request.POST.get('period')
-        
-        # Get date range
         if period_type == 'custom':
             try:
-                start_date = datetime.strptime(request.POST.get('start_date'), '%Y-%m-%d')
-                end_date = datetime.strptime(request.POST.get('end_date'), '%Y-%m-%d')
+                start_date = datetime.strptime(request.POST.get('start_date'.replace("/", "-")), '%Y-%m-%d')
+                end_date = datetime.strptime(request.POST.get('end_date'.replace("/", "-")), '%Y-%m-%d')
             except (ValueError, TypeError):
                 return JsonResponse({
                     'success': False,
@@ -37,10 +42,7 @@ def generate_report(request):
                     'message': 'Invalid period type'
                 })
 
-        # Add one day to end_date to include the full day
         end_date = end_date + timedelta(days=1)
-
-        # Generate report based on type
         if report_type == 'sales':
             queryset = Sales.objects.filter(
                 sale_date__gte=start_date,
@@ -62,14 +64,11 @@ def generate_report(request):
                 'message': 'Invalid report type'
             })
 
-        # Convert queryset to list for easier handling
         data = list(queryset)
         
-        # Calculate summary statistics
         total_amount = sum(item['total'] for item in data)
         avg_amount = total_amount / len(data) if data else 0
 
-        # Create context with correct field names
         context = {
             'data': [{
                 'date': item['sale_date' if report_type == 'sales' else 'purchase_date'],
@@ -83,7 +82,6 @@ def generate_report(request):
             'report_type': report_type.capitalize()
         }
 
-        # Render the report template
         report_html = render_to_string('report.html', context)
         
         period_text = {
@@ -100,9 +98,6 @@ def generate_report(request):
         })
 
     except Exception as e:
-        import traceback
-        print(f"Error: {str(e)}")
-        print(traceback.format_exc())
         return JsonResponse({
             'success': False,
             'message': f'Error generating report: {str(e)}'

@@ -31,7 +31,7 @@ ALLOWED_HOSTS = ["pharmacy-management-system-yqms.onrender.com", '127.0.0.1']
 
 
 # Application definition
-AUTH_USER_MODEL = "authentication.Pharmacy"
+AUTH_USER_MODEL = "authentication.PharmacyUser"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
      "authentication",
-     "useradmin"
+     "useradmin",
+     'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -85,11 +86,34 @@ WSGI_APPLICATION = "pharmacy_ms.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
+# DATABASES = {
+# 'default': {
+# 'ENGINE': 'django.db.backends.postgresql',
+# 'NAME': 'pharmacy_ms',
+# 'USER': 'pharmacy_ms_user',
+# 'PASSWORD': '1XVxUSy8Ju7P6C2cHX9ghdX0IkUAlzhN',
+# 'HOST': 'dpg-ctl64v3v2p9s738dk7lg-a.oregon-postgres.render.com',
+# 'PORT': '5432',  
+# }
+# }
+
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+'default': {
+'ENGINE': 'django.db.backends.postgresql',
+'NAME': 'pharmacy_ms',
+'USER': '1XVxUSy8Ju7P6C2cHX9ghdX0IkUAlzhN',
+'PASSWORD': '',
+'HOST': 'dpg-ctl64v3v2p9s738dk7lg-a',
+'PORT': '5432',  
+}
 }
 
 
