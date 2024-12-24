@@ -109,8 +109,8 @@ DATABASES = {
 'default': {
 'ENGINE': 'django.db.backends.postgresql',
 'NAME': 'pharmacy_ms',
-'USER': '1XVxUSy8Ju7P6C2cHX9ghdX0IkUAlzhN',
-'PASSWORD': '',
+'USER': 'pharmacy_ms_user:',
+'PASSWORD': '1XVxUSy8Ju7P6C2cHX9ghdX0IkUAlzhN@',
 'HOST': 'dpg-ctl64v3v2p9s738dk7lg-a',
 'PORT': '5432',  
 }
