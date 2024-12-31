@@ -1,19 +1,17 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
 <aside class="sidebar">
-    <!-- Profile Section -->
     <div class="sidebar-profile">
         <div class="profile-desktop">
             <img src="{{request.user.profile_picture.url}}" alt="User Profile" class="profile-avatar">
             <div class="profile-info">
                 <span class="username">{{ request.user.username }}</span>
-                <a href="{% url 'logout' %}" class="logout-btn">
+                <a href="{% url 'logout' %}" class="logout-btn btn btn-outline-danger">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>
         </div>
         
-        <!-- Mobile Profile Dropdown -->
         <div class="mobile-header">
             <button class="menu-toggle">
                 <i class="fas fa-bars"></i>
@@ -34,7 +32,6 @@
         </div>
     </div>
 
-    <!-- Navigation Menu -->
     <nav class="sidebar-nav">
         <ul class="nav-menu">
             <li class="nav-item {% if active_tab == 'dash' %}active{% endif %}">

@@ -24,6 +24,7 @@
     top: 0px;
     width: inherit;
     height: 100%;
+    overflow-y: scroll;
     color: #e1ffff;
   }
  

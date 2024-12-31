@@ -1,6 +1,7 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/table.css' %}">
 <link rel="stylesheet" href="{% static 'css/sales_table.css' %}">
+ 
 
 <div id="table-container" class="col-md-12 mb-3 card shadow-sm">
     <div id="drag-handle" class="d-none border-bottom" style="cursor: move; background-color: #f8f9fa;">
@@ -52,35 +53,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for sale in sales %}
-                    <tr>
-                        <td class="fw-medium">{{ sale.id }}</td>
-                        <td class="text-nowrap">{{ sale.customer.first_name }} {{ sale.customer.last_name }}</td>
-                        <td>{{ sale.medicine.name }}</td>
-                        <td class="text-nowrap">{{ sale.quantity }}</td>
-                        <td class="text-end">${{ sale.total_price }}</td>
-                        <td class="text-nowrap">{{ sale.sale_date }}</td>
-                        <td>
-                            {% if sale.receipt %}
-                            <a href="{{ sale.receipt }}" class="btn btn-sm btn-outline-primary">
-                                <i class="fa fa-download me-1"></i>Receipt
-                            </a>
-                            {% else %}
-                            <span class="text-muted">No receipt</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ sale.id }}">
-                                <i class="fa fa-trash me-1"></i>Delete
-                            </button>
-                        </td>
+                    <!-- Skeleton Loading Rows -->
+                    <tr class="skeleton-row" id="skeleton-template">
+                        <td><div class="skeleton skeleton-text w-75"></div></td>
+                        <td><div class="skeleton skeleton-text w-100"></div></td>
+                        <td><div class="skeleton skeleton-text w-75"></div></td>
+                        <td><div class="skeleton skeleton-text w-100"></div></td>
+                        <td><div class="skeleton skeleton-text w-75"></div></td>
+                        <td><div class="skeleton skeleton-text w-50"></div></td>
+                        <td><div class="skeleton skeleton-button"></div></td>
+                        <td><div class="skeleton skeleton-button"></div></td>
                     </tr>
-                    {% endfor %}
+                    <!-- Repeat skeleton rows for better loading appearance -->
+                    <tr class="skeleton-row">
+                        <td><div class="skeleton skeleton-text w-75"></div></td>
+                        <td><div class="skeleton skeleton-text w-100"></div></td>
+                        <td><div class="skeleton skeleton-text w-75"></div></td>
+                        <td><div class="skeleton skeleton-text w-100"></div></td>
+                        <td><div class="skeleton skeleton-text w-75"></div></td>
+                        <td><div class="skeleton skeleton-text w-50"></div></td>
+                        <td><div class="skeleton skeleton-button"></div></td>
+                        <td><div class="skeleton skeleton-button"></div></td>
+                    </tr>
+                    <tr class="skeleton-row">
+                        <td><div class="skeleton skeleton-text w-75"></div></td>
+                        <td><div class="skeleton skeleton-text w-100"></div></td>
+                        <td><div class="skeleton skeleton-text w-75"></div></td>
+                        <td><div class="skeleton skeleton-text w-100"></div></td>
+                        <td><div class="skeleton skeleton-text w-75"></div></td>
+                        <td><div class="skeleton skeleton-text w-50"></div></td>
+                        <td><div class="skeleton skeleton-button"></div></td>
+                        <td><div class="skeleton skeleton-button"></div></td>
+                    </tr>
+                    
+                    
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
 
  

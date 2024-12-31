@@ -27,7 +27,31 @@
             {% include 'sales_table.html' %}
         </div>
         
-        
+        <!-- Receipt preview modal -->
+
+        <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pdfModalLabel">PDF Document</h5>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" id="printBtn">
+                                <i class="bi bi-printer"></i> Print
+                            </button>
+                            <button type="button" class="btn btn-primary" id="downloadBtn">
+                                <i class="bi bi-download"></i> Download
+                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div id="pdfViewer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <!-- End Receipt modal -->
         <script>
             $(document).ready(function () {
                 let previousSelectedMedicines = [];
@@ -157,7 +181,70 @@
                     $("#dialog").dialog("open");
                 });
             };
+            function showPdfModal(pdfUrl) {
+                window.pdfUrl = pdfUrl;
+                const pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'));
+                pdfModal.show();
+                $('#pdfModal').on('shown.bs.modal', function() {
+                    if (window.pdfUrl) {
+                        loadPdf();
+                    } else {
+                        console.error('No PDF URL provided');
+                        $('#pdfViewer').html('<div class="alert alert-danger">Error loading PDF document</div>');
+                    }
+                });
+            }
 
+
+            function loadPdf() {
+                pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+                    pdfDoc = pdf;
+                    renderPage(1);
+                }).catch(function(error) {
+                    console.error('Error loading PDF:', error);
+                });
+            }
+            
+            function renderPage(pageNumber) {
+                pdfDoc.getPage(pageNumber).then(function(page) {
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    
+                    $('#pdfViewer').empty().append(canvas);
+                    page.render(renderContext);
+                });
+            }
+            
+            $('#printBtn').click(function() {
+                $('#printBtn').off('click').on('click', function() {
+                    const printWindow = window.open(pdfUrl, '_blank');
+                    printWindow.onload = function() {
+                        printWindow.print();
+                    };
+                });
+            });
+            
+            $('#downloadBtn').click(function() {
+                const link = document.createElement('a');
+                link.href = pdfUrl;
+                link.download = 'document.pdf';  
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            
+            $('#pdfModal').on('shown.bs.modal', function() {
+                loadPdf();
+            });
 
             $(document).on('click', '.cart-cell', function () {
                 const cartId = $(this).data('id');
@@ -313,6 +400,9 @@
                                         $('#id').val("");
                                         $("#salesForm")[0].reset();
                                         const jsonSales = saleId ? response.sales : response.sales.reverse();
+                                                                        if (response.invoice) {
+                                            showPdfModal(response.invoice);
+                                        }
                                         renderSales(jsonSales);
                                         selectedMedicines=[];
                                         updateTotalPrice()

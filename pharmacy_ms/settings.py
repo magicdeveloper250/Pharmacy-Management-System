@@ -81,6 +81,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 WSGI_APPLICATION = "pharmacy_ms.wsgi.application"
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 
 # Database
@@ -101,6 +102,7 @@ WSGI_APPLICATION = "pharmacy_ms.wsgi.application"
 # 'PASSWORD': '1XVxUSy8Ju7P6C2cHX9ghdX0IkUAlzhN',
 # 'HOST': 'dpg-ctl64v3v2p9s738dk7lg-a.oregon-postgres.render.com',
 # 'PORT': '5432',  
+# 'CONN_MAX_AGE': 60
 # }
 # }
 
@@ -113,6 +115,7 @@ DATABASES = {
 'PASSWORD': '1XVxUSy8Ju7P6C2cHX9ghdX0IkUAlzhN',
 'HOST': 'dpg-ctl64v3v2p9s738dk7lg-a',
 'PORT': '5432',  
+'CONN_MAX_AGE': 60
 }
 }
 
@@ -194,5 +197,4 @@ STORAGES = {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
-
 

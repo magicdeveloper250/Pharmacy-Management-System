@@ -6,7 +6,6 @@
         <i class="fa fa-arrows-alt fa-lg"></i>
     </div>
     <div id="table-search" class="d-flex justify-content-between align-items-center mb-3 mt-2">
-        <!-- Search Section -->
         <div class="flex-grow-1 me-3">
             <div class="input-group">
                 <input type="text" 
@@ -20,7 +19,6 @@
             </div>
         </div>
         
-        <!-- Controls -->
         <div class="d-flex align-items-center gap-2">
             <button id="pip-toggle" 
                     class="btn btn-primary btn-sm" 
@@ -47,16 +45,35 @@
             </tr>
         </thead>
         <tbody>
-            {% for purchase in purchases %}
-                <tr>
-                    <td>{{ purchase.id }}</td>
-                    <td>{{ purchase.consumer.first_name }} {{ purchase.consumer.last_name }}</td>
-                    <td>{{ purchase.medicine.name }}</td>
-                    <td>{{ purchase.quantity }}</td>
-                    <td>${{ purchase.total_price }}</td>
-                    <td>{{ purchase.purchase_date }}</td>
-                </tr>
-            {% endfor %}
+             <!-- Skeleton Loading Rows -->
+             <tr class="skeleton-row" id="skeleton-template">
+                <td><div class="skeleton skeleton-text w-75"></div></td>
+                <td><div class="skeleton skeleton-text w-100"></div></td>
+                <td><div class="skeleton skeleton-text w-75"></div></td>
+                <td><div class="skeleton skeleton-text w-100"></div></td>
+                <td><div class="skeleton skeleton-text w-75"></div></td>
+                <td><div class="skeleton skeleton-text w-50"></div></td>
+                <td><div class="skeleton skeleton-button"></div></td>
+            </tr>
+            <!-- Repeat skeleton rows for better loading appearance -->
+            <tr class="skeleton-row">
+                <td><div class="skeleton skeleton-text w-75"></div></td>
+                <td><div class="skeleton skeleton-text w-100"></div></td>
+                <td><div class="skeleton skeleton-text w-75"></div></td>
+                <td><div class="skeleton skeleton-text w-100"></div></td>
+                <td><div class="skeleton skeleton-text w-75"></div></td>
+                <td><div class="skeleton skeleton-text w-50"></div></td>
+                <td><div class="skeleton skeleton-button"></div></td>
+            </tr>
+            <tr class="skeleton-row">
+                <td><div class="skeleton skeleton-text w-75"></div></td>
+                <td><div class="skeleton skeleton-text w-100"></div></td>
+                <td><div class="skeleton skeleton-text w-75"></div></td>
+                <td><div class="skeleton skeleton-text w-100"></div></td>
+                <td><div class="skeleton skeleton-text w-75"></div></td>
+                <td><div class="skeleton skeleton-text w-50"></div></td>
+                <td><div class="skeleton skeleton-button"></div></td>
+            </tr>
         </tbody>
     </table>
 </div>
